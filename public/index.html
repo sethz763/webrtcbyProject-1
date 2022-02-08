@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="img/webrtc.JPEG">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <title>Webrtc Demo</title>  
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.socket.io/4.4.0/socket.io.min.js" integrity="sha384-1fOn6VtTq3PWwfsOrk45LnYcGosJwzMHv+Xh/Jx5303FVOXzEnw0EpLv30mtjmlj" crossorigin="anonymous"></script>
+  </head>
+  <body>
+
+<div class="container">
+  <h2>Webrtc Training</h2>
+  <form class="form-inline">
+    <label class="mb-2 mr-sm-2">Your Id is :  </label>
+    <label class="mb-2 mr-sm-2" id="userId"> </label>
+
+  </form>
+</div>
+<div class="container">
+  <form class="">
+    <label class="mb-2 mr-sm-2">Call a Mobile</label>
+    <input type="text" class="form-control mb-2 mr-sm-2" id="toSocket" placeholder="Enter mobile">
+    <button type="button" class="btn btn-primary mb-2" id="call">Start</button>
+    <button type="button" class="btn btn-primary mb-2" id="stop">Stop</button>
+    <button type="button" class="btn btn-primary mb-2" id="mute">Mute</button>
+    <button type="button" class="btn btn-primary mb-2" id="unMute">UnMute</button>
+  </form>
+  <div id="videoal">
+      <div class="video" >
+          <h3>Local video </h3>
+          <video id="localVideo" autoplay controls autoplay="true"></video>
+      </div>
+      <div class="video">
+          <h3>Remote video </h3>
+          <video id="remoteVideo" autoplay controls autoplay="true"></video></video>
+      </div>
+  </div>
+</div>
+<script src="index.js" type="text/javascript"></script>
+  </body>
+ </html>

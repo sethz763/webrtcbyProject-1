@@ -1,0 +1,17 @@
+{
+  "name": "project1-webrtc-without-canvas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.2",
+    "git": "^0.1.5",
+    "socket.io": "^4.4.1"
+  }
+}
