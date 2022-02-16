@@ -20,6 +20,19 @@ socket.on('connect', () => {
     fromSocketId = socket.id
 })
 
+socket.on('users_available', users =>{
+    document.getElementById('users').innerHTML = "<h3 id='heading'>online users</h3>";
+    users.forEach(user=>{
+        document.getElementById('users').innerHTML += "" +
+        "<form class='form-inline'>" +
+        "<label class='mb-2 mr-sm-2'>Other User Socket is:  </label>"+
+        "<label class='mb-2 mr-sm-2'>"+ user + "</label>"+
+        "</form>"
+    })
+})
+
+
+
 //get local media
 const openMediaDevices = async() =>{
     try{
