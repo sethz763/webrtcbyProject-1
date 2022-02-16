@@ -8,8 +8,8 @@ const credentials = {key: privateKey, cert: certificate}
 
 const app = express()
 //const httpServer = http.createServer(app)
-const httpsPort = 4200
-const httpPort = 4201
+const httpsPort = 443
+const httpPort = 80
 const socketio = require('socket.io')
 
 const socket_tracker = []
