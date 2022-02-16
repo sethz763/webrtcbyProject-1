@@ -1,5 +1,4 @@
 const express = require("express")
-const cors = require('cors')
 const http = require('http')
 const https = require("https")
 const fs = require('fs')
@@ -9,23 +8,23 @@ const credentials = {key: privateKey, cert: certificate}
 
 const app = express()
 //const httpServer = http.createServer(app)
-const port = process.env.PORT || 4200
+const httpsPort = 4200
+const httpPort = 4201
 const socketio = require('socket.io')
 
 
 
 app.use(express.static('public'))
-app.use(cors())
 
 const httpServer = http.createServer(app)
 const httpsServer = https.createServer(credentials, app)
 
-httpServer.listen(4201, ()=>{
-    console.log('http server starting on port :', 4201)
+httpServer.listen(httpPort, ()=>{
+    console.log('http server starting on port :', httpPort)
 })
 
-httpsServer.listen(port, () =>{
-    console.log("https server starting on port : ", port)
+httpsServer.listen(httpsPort, () =>{
+    console.log("https server starting on port : ", httpsPort)
 })
 
 var ip = require("ip");
