@@ -13,13 +13,13 @@ const configuaration = {iceServers:[{urls: 'stun:stun.l.google.com:19302'}]}
 let peer = new RTCPeerConnection(configuaration)
 let toSocketId, fromSocketId
 
-//Get socket Id
-
+//Get socket ID
 socket.on('connect', () => {
     fromSocket.innerHTML = socket.id
     fromSocketId = socket.id
 })
 
+//update list of users that are online
 socket.on('users_available', users =>{
     document.getElementById('users').innerHTML = "<h3 id='heading'>online users</h3>";
     users.forEach(user=>{
@@ -32,12 +32,15 @@ socket.on('users_available', users =>{
 })
 
 
-
 //get local media
 const openMediaDevices = async() =>{
     try{
         let stream = await navigator.mediaDevices.getUserMedia({video:true, audio:true})
-        localVideo.srcObject = stream
+        stream.getTracks().forEach(track => {
+            track.applyConstraints({height:720, width:1280})
+            peer.addTrack(track)
+        } ) 
+        localVideo.srcObject = stream       
         tracks = stream.getTracks()
         return stream
     }catch(error){
@@ -45,13 +48,17 @@ const openMediaDevices = async() =>{
     }
 }
 
+
+
+
 //create offer
 const createOffer = async() => {
     try {
         let stream = await openMediaDevices()
-        stream.getTracks().forEach(track => peer.addTrack(track)) 
+        
         let offer = await peer.createOffer()
         peer.setLocalDescription(new RTCSessionDescription(offer))
+        
         //ice candidate
         peer.addEventListener('icecandidate', e => {
             if(e.candidate){

@@ -56,9 +56,13 @@ function removeFromUserList(deadSocket){
 
 io.on('connection', (socket) =>{
     console.log('user connected ', socket.id)
-    
 
     updateSocketList(socket.id)
+
+    //test to see if I can see settings
+    socket.on('settings', settings =>{
+        console.log("settings: " +settings)
+    })
 
     socket.on('disconnect', function(){
         console.log("user disconnected : " + socket.id)
