@@ -56,7 +56,6 @@ const createOffer = async() => {
     try {
         let stream = await openMediaDevices()
         stream.getTracks().forEach(track => peer.addTrack(track)) 
-        
         let offer = await peer.createOffer()
         peer.setLocalDescription(new RTCSessionDescription(offer))
         
