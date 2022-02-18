@@ -37,7 +37,7 @@ const openMediaDevices = async() =>{
     try{
         let stream = await navigator.mediaDevices.getUserMedia({video:true, audio:true})
         stream.getTracks().forEach(track => {
-            //track.applyConstraints({height:720, width:1280})
+            track.applyConstraints({height:720, width:1280})
             peer.addTrack(track)
         } ) 
         localVideo.srcObject = stream       
@@ -55,6 +55,7 @@ const openMediaDevices = async() =>{
 const createOffer = async() => {
     try {
         let stream = await openMediaDevices()
+        stream.getTracks().forEach(track => peer.addTrack(track)) 
         
         let offer = await peer.createOffer()
         peer.setLocalDescription(new RTCSessionDescription(offer))
