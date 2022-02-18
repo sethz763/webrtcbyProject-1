@@ -38,7 +38,6 @@ const openMediaDevices = async() =>{
         let stream = await navigator.mediaDevices.getUserMedia({video:true, audio:true})
         stream.getTracks().forEach(track => {
             track.applyConstraints({height:720, width:1280})
-            peer.addTrack(track)
         } ) 
         localVideo.srcObject = stream       
         tracks = stream.getTracks()
@@ -159,7 +158,7 @@ socket.on('calleeCandidate', data =>{
 })
 
 
-const text = "WEBRTC TRAINING - "
+const text = "Seth's Peer to Peer Test - "
 
 function addZero(i) {
     if (i < 10) {i = "0" + i}
