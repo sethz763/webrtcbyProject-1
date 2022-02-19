@@ -104,7 +104,9 @@ const openMediaDevices = async() =>{
             audio:true})
         
         stream.getTracks().forEach(track => {
-            track.applyConstraints({echoCancellation:true})
+            track.applyConstraints({height:720,
+                width:1280,
+                echoCancellation:true})
         } ) 
         localVideo.srcObject = stream       
 
