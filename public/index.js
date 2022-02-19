@@ -69,14 +69,11 @@ function preferCodec(codecs, mimeType) {
     return allSortedCodecs
 }
  
-
-
 //get list of all media devices
 async function updateCameraList() {
     var devices = await navigator.mediaDevices.enumerateDevices();
     var cameras = devices.filter(device =>device.kind === 'videoinput')
     var listElement = document.getElementById('camera_selector')
-    //const cameras = await navigator.mediaDevices.enumerateDevices();
 
     listElement.innerHTML = ''
      cameras.map(camera =>{
@@ -88,7 +85,6 @@ async function updateCameraList() {
 }
 
 // Get the initial set of cameras connected
-//var videoCameras = getConnectedDevices('videoinput');
 updateCameraList();
 
 // Listen for changes to media devices and update the list accordingly
@@ -108,7 +104,7 @@ const openMediaDevices = async() =>{
             audio:true})
         
         stream.getTracks().forEach(track => {
-            track.applyConstraints({height:1080, width:1920})
+            track.applyConstraints({echoCancellation:true})
         } ) 
         localVideo.srcObject = stream       
 
