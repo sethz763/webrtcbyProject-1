@@ -13,38 +13,109 @@ const configuaration = {iceServers:[{urls: 'stun:stun.l.google.com:19302'}]}
 let peer = new RTCPeerConnection(configuaration)
 let toSocketId, fromSocketId
 
+
+let codecList = RTCRtpSender.getCapabilities("video").codecs;
+console.log(codecList)
+
+const codec_type = "video/VB9"
+const newCodecList = preferCodec(codecList, codec_type)
+console.log("after modifying codec list")
+console.log(newCodecList)
+
+changeVideoCodec(codec_type)
+
 //Get socket ID
 socket.on('connect', () => {
     fromSocket.innerHTML = socket.id
     fromSocketId = socket.id
 })
 
-//update list of users that are online
-socket.on('users_available', users =>{
-    document.getElementById('users').innerHTML = "<h3 id='heading'>online users</h3>";
-    users.forEach(user=>{
-        document.getElementById('users').innerHTML += "" +
-        "<form class='form-inline'>" +
-        "<label class='mb-2 mr-sm-2'>Other User Socket is:  </label>"+
-        "<label class='mb-2 mr-sm-2'>"+ user + "</label>"+
-        "</form>"
-    })
-})
+
+//change codec
+function changeVideoCodec(mimeType) {
+    const transceivers = peer.getTransceivers();
+  
+    transceivers.forEach(transceiver => {
+        transceiver.setCodecPreferences(newCodecList)
+        let senders = transceivers[0].getSenders()
+
+        senders.forEach( sender=>{
+            setVideoParams(sender, 8000)
+        })
+  })
+}
+
+async function setVideoParams(sender, bitrate) {
+    const params = sender.getParameters();
+
+    params.encodings[0].maxBitrate = bitrate;
+    await sender.setParameters(params);
+  }
+
+//reorder codec preference list
+function preferCodec(codecs, mimeType) {
+    let otherCodecs = [];
+    let sortedCodecs = [];
+  
+    codecs.forEach(codec => {
+      if (codec.mimeType === mimeType) {
+        sortedCodecs.push(codec);
+      } else {
+        otherCodecs.push(codec);
+      }
+    });
+    
+    let allSortedCodecs = sortedCodecs.concat(otherCodecs)
+    return allSortedCodecs
+}
+ 
+
+
+//get list of all media devices
+async function updateCameraList() {
+    var devices = await navigator.mediaDevices.enumerateDevices();
+    var cameras = devices.filter(device =>device.kind === 'videoinput')
+    var listElement = document.getElementById('camera_selector')
+    //const cameras = await navigator.mediaDevices.enumerateDevices();
+
+    listElement.innerHTML = ''
+     cameras.map(camera =>{
+        cameraOption = document.createElement('option')
+        cameraOption.label = camera.label
+        cameraOption.value = camera.deviceId
+        listElement.add(cameraOption)
+    })     
+}
+
+// Get the initial set of cameras connected
+//var videoCameras = getConnectedDevices('videoinput');
+updateCameraList();
+
+// Listen for changes to media devices and update the list accordingly
+navigator.mediaDevices.addEventListener('devicechange', event => {
+    updateCameraList();
+});
 
 
 //get local media
 const openMediaDevices = async() =>{
-    try{
-        let stream = await navigator.mediaDevices.getUserMedia({video:true, audio:true})
+    let selected_device = document.getElementById('camera_selector').value
+        try{
+        let stream = await navigator.mediaDevices.getUserMedia(
+            {video:{ deviceId: selected_device,
+                    width:{ideal: 1280},
+                    height: {ideal:720}},
+            audio:true})
+        
         stream.getTracks().forEach(track => {
-            track.applyConstraints({height:720, width:1280})
+            track.applyConstraints({height:1080, width:1920})
         } ) 
         localVideo.srcObject = stream       
-        tracks = stream.getTracks()
+
         return stream
     }catch(error){
         console.log(error)
-    }
+    }    
 }
 
 
@@ -52,9 +123,12 @@ const openMediaDevices = async() =>{
 
 //create offer
 const createOffer = async() => {
+    
     try {
+        
         let stream = await openMediaDevices()
         stream.getTracks().forEach(track => peer.addTrack(track)) 
+        
         let offer = await peer.createOffer()
         peer.setLocalDescription(new RTCSessionDescription(offer))
         
@@ -76,8 +150,10 @@ const createOffer = async() => {
 //create Answer
 const createAnswer = async(destination) => {
     try{
+        
         let stream = await openMediaDevices()
         stream.getTracks().forEach(track => peer.addTrack(track)) 
+        
         let answer = await peer.createAnswer()
         peer.setLocalDescription(new RTCSessionDescription(answer))
 
@@ -157,8 +233,25 @@ socket.on('calleeCandidate', data =>{
     console.log(data)
 })
 
+//update list of users that are online
+socket.on('users_available', users =>{
+    document.getElementById('users').innerHTML = "<h3 id='heading'>online users</h3>";
+    users.forEach(user=>{
+        document.getElementById('users').innerHTML += "" +
+        "<form class='form-inline'>" +
+        "<label class='mb-2 mr-sm-2'>Other User Socket is:  </label>"+
+        "<label class='mb-2 mr-sm-2'>"+ user + "</label>"+
+        "</form>"
+    })
+})
 
-const text = "Seth's Peer to Peer Test - "
+var text = "Seth's Peer to Peer Test - "
+peer.addEventListener('connectionstatechange', event =>{
+    if (peer.connectionState === 'connected') {
+        // Peers connected!
+        text = "Connected! "
+    }
+})
 
 function addZero(i) {
     if (i < 10) {i = "0" + i}
