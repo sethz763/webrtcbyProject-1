@@ -17,7 +17,7 @@ let toSocketId, fromSocketId
 let codecList = RTCRtpSender.getCapabilities("video").codecs;
 console.log(codecList)
 
-const codec_type = "video/VB9"
+const codec_type = ["video/VP9","video/VP8"]  
 const newCodecList = preferCodec(codecList, codec_type)
 console.log("after modifying codec list")
 console.log(newCodecList)
@@ -40,7 +40,7 @@ function changeVideoCodec(mimeType) {
         let senders = transceivers[0].getSenders()
 
         senders.forEach( sender=>{
-            setVideoParams(sender, 8000)
+            setVideoParams(sender, 1000)
         })
   })
 }
@@ -57,8 +57,9 @@ function preferCodec(codecs, mimeType) {
     let otherCodecs = [];
     let sortedCodecs = [];
   
+    i = 0
     codecs.forEach(codec => {
-      if (codec.mimeType === mimeType) {
+      if (codec.mimeType === mimeType[i] && i<mimeType.length) {
         sortedCodecs.push(codec);
       } else {
         otherCodecs.push(codec);
@@ -98,7 +99,7 @@ const openMediaDevices = async() =>{
     let selected_device = document.getElementById('camera_selector').value
         try{
         let stream = await navigator.mediaDevices.getUserMedia(
-            {video:{ deviceId: selected_device,
+            {video:{ deviceId: camera_selector.value,
                     width:{ideal: 1280},
                     height: {ideal:720}},
             audio:true})
@@ -116,14 +117,30 @@ const openMediaDevices = async() =>{
     }    
 }
 
+async function changeVideoInput(){
 
-
-
+    try{
+        let stream = await navigator.mediaDevices.getUserMedia(
+            {video:{ deviceId: camera_selector.value,
+                    width:{ideal: 1280},
+                    height: {ideal:720}},
+            audio:true})
+    
+        const tracks = stream.getTracks()
+        const senders = peer.getSenders()
+        senders.forEach(sender=>tracks.forEach(track=>sender.replaceTrack(track)))
+    
+        localVideo.srcObject = stream
+    }
+    catch{
+        console.log("problem with camera selector")
+    }
+    
+}
+    
 //create offer
 const createOffer = async() => {
-    
     try {
-        
         let stream = await openMediaDevices()
         stream.getTracks().forEach(track => peer.addTrack(track)) 
         
@@ -148,9 +165,9 @@ const createOffer = async() => {
 //create Answer
 const createAnswer = async(destination) => {
     try{
-        
         let stream = await openMediaDevices()
-        stream.getTracks().forEach(track => peer.addTrack(track)) 
+        stream.getTracks().forEach(track => peer.addTrack(track))
+       
         
         let answer = await peer.createAnswer()
         peer.setLocalDescription(new RTCSessionDescription(answer))
@@ -201,6 +218,7 @@ call.addEventListener('click', () => {
     createOffer()
     mute.addEventListener('click', muteTracks)
     stop.addEventListener('click', stopTracks)
+    camera_selector.addEventListener('change', changeVideoInput)
 })
 
 //mute tracks
