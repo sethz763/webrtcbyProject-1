@@ -111,6 +111,8 @@ const openMediaDevices = async() =>{
         } ) 
         localVideo.srcObject = stream       
 
+        camera_selector.addEventListener('change', changeVideoInput)
+
         return stream
     }catch(error){
         console.log(error)
@@ -120,6 +122,8 @@ const openMediaDevices = async() =>{
 async function changeVideoInput(){
 
     try{
+        stopTracks()
+
         let stream = await navigator.mediaDevices.getUserMedia(
             {video:{ deviceId: camera_selector.value,
                     width:{ideal: 1280},
@@ -218,7 +222,6 @@ call.addEventListener('click', () => {
     createOffer()
     mute.addEventListener('click', muteTracks)
     stop.addEventListener('click', stopTracks)
-    camera_selector.addEventListener('change', changeVideoInput)
 })
 
 //mute tracks
