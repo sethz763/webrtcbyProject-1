@@ -108,8 +108,10 @@ const openMediaDevices = async() =>{
             track.applyConstraints({height:720,
                 width:1280,
                 echoCancellation:true})
+
+                localVideo.srcObject = stream
+                localVideo.autoplay=true
         } ) 
-        localVideo.srcObject = stream       
 
         camera_selector.addEventListener('change', changeVideoInput)
 
@@ -135,6 +137,7 @@ async function changeVideoInput(){
         senders.forEach(sender=>tracks.forEach(track=>sender.replaceTrack(track)))
     
         localVideo.srcObject = stream
+        localVideo.autoplay=true
     }
     catch{
         console.log("problem with camera selector")
@@ -202,6 +205,7 @@ socket.on('offer', data=>{
     peer.ontrack = e => {
         stream.addTrack(e.track)
         remoteVideo.srcObject = stream
+        remoteVideo.autoplay = true
         console.log(e)
     }
 })
@@ -213,6 +217,7 @@ socket.on('answer', data => {
     peer.ontrack = e => {
         stream.addTrack(e.track)
         remoteVideo.srcObject = stream
+        remoteVideo.autoplay = true
         console.log(e)
     }
 })
