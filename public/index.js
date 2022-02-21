@@ -211,9 +211,9 @@ const createAnswer = async(destination) => {
 }
 
 function acceptOffer(){
-    peer.setRemoteDescription(data.offer)
+    peer.setRemoteDescription(offerData.offer)
     let stream = new MediaStream()
-    createAnswer(data.fromSocketId)
+    createAnswer(offerData.fromSocketId)
     peer.ontrack = e => {
         stream.addTrack(e.track)
         remoteVideo.srcObject = stream
