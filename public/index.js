@@ -13,6 +13,7 @@ const configuaration = {iceServers:[{urls: 'stun:stun.l.google.com:19302'}]}
 let peer = new RTCPeerConnection(configuaration)
 let toSocketId, fromSocketId
 
+var camera_selector = document.getElementById('camera_selector')
 
 let codecList = RTCRtpSender.getCapabilities("video").codecs;
 console.log(codecList)
@@ -74,14 +75,13 @@ function preferCodec(codecs, mimeType) {
 async function updateCameraList() {
     var devices = await navigator.mediaDevices.enumerateDevices();
     var cameras = devices.filter(device =>device.kind === 'videoinput')
-    var listElement = document.getElementById('camera_selector')
 
-    listElement.innerHTML = ''
+    camera_selector.innerHTML = ''
      cameras.map(camera =>{
         cameraOption = document.createElement('option')
         cameraOption.label = camera.label
         cameraOption.value = camera.deviceId
-        listElement.add(cameraOption)
+        camera_selector.add(cameraOption)
     })     
 }
 
@@ -96,7 +96,7 @@ navigator.mediaDevices.addEventListener('devicechange', event => {
 
 //get local media
 const openMediaDevices = async() =>{
-    let selected_device = document.getElementById('camera_selector').value
+    
         try{
         let stream = await navigator.mediaDevices.getUserMedia(
             {video:{ deviceId: camera_selector.value,
@@ -108,9 +108,7 @@ const openMediaDevices = async() =>{
             track.applyConstraints({height:720,
                 width:1280,
                 echoCancellation:true})
-
                 localVideo.srcObject = stream
-                localVideo.autoplay=true
         } ) 
 
         camera_selector.addEventListener('change', changeVideoInput)
@@ -137,7 +135,7 @@ async function changeVideoInput(){
         senders.forEach(sender=>tracks.forEach(track=>sender.replaceTrack(track)))
     
         localVideo.srcObject = stream
-        localVideo.autoplay=true
+        localVideo.play()
     }
     catch{
         console.log("problem with camera selector")
@@ -196,18 +194,24 @@ const createAnswer = async(destination) => {
 }
 
 
-
 //receive offer
 socket.on('offer', data=>{
-    peer.setRemoteDescription(data.offer)
-    let stream = new MediaStream()
-    createAnswer(data.fromSocketId)
-    peer.ontrack = e => {
-        stream.addTrack(e.track)
-        remoteVideo.srcObject = stream
-        remoteVideo.autoplay = true
-        console.log(e)
-    }
+    var incoming_call = document.getElementById("accept_call")
+    incoming_call.hidden=false
+    incoming_call.addEventListener("click", ()=>{
+
+            peer.setRemoteDescription(data.offer)
+            let stream = new MediaStream()
+            createAnswer(data.fromSocketId)
+            peer.ontrack = e => {
+                stream.addTrack(e.track)
+                remoteVideo.srcObject = stream
+                remoteVideo.play()
+                localVideo.play()
+                console.log(e)
+            incoming_call.hidden = true;
+        }
+    })
 })
 
 //receive answer
@@ -217,7 +221,9 @@ socket.on('answer', data => {
     peer.ontrack = e => {
         stream.addTrack(e.track)
         remoteVideo.srcObject = stream
-        remoteVideo.autoplay = true
+        if(getConfirmation){
+            remoteVideo.play()
+        }
         console.log(e)
     }
 })
@@ -261,11 +267,14 @@ socket.on('calleeCandidate', data =>{
 socket.on('users_available', users =>{
     document.getElementById('users').innerHTML = "<h3 id='heading'>online users</h3>";
     users.forEach(user=>{
-        document.getElementById('users').innerHTML += "" +
-        "<form class='form-inline'>" +
-        "<label class='mb-2 mr-sm-2'>Other User Socket is:  </label>"+
-        "<label class='mb-2 mr-sm-2'>"+ user + "</label>"+
-        "</form>"
+        if(user != fromSocket){
+            document.getElementById('users').innerHTML += "" +
+            "<form class='form-inline'>" +
+            "<label class='mb-2 mr-sm-2'>Other User Socket is:  </label>"+
+            "<label class='mb-2 mr-sm-2'>"+ user + "</label>"+
+            "</form>"
+        }
+        
     })
 })
 
@@ -276,6 +285,8 @@ peer.addEventListener('connectionstatechange', event =>{
         text = "Connected! "
     }
 })
+
+
 
 function addZero(i) {
     if (i < 10) {i = "0" + i}
