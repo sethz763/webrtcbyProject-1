@@ -25,6 +25,8 @@ const newCodecList = preferCodec(codecList, codec_type)
 console.log("after modifying codec list")
 console.log(newCodecList)
 
+stop.innerHTML = "END CALL"
+
 changeVideoCodec(codec_type)
 
 //Get socket ID
@@ -222,12 +224,11 @@ socket.on('offer', data=>{
                 console.log(e)
 
             incoming_call.hidden = true
-            incoming_call.text = "hi"
             incoming_call.removeEventListener()
         }
     })
     remoteVideo.oncanplay = function(){
-        incoming_call.text = "READY - CLICK TO START"
+        incoming_call.innerHTML = "READY - CLICK TO START"
         incoming_call.hidden = false;
         incoming_call.addEventListener("click", playVideo)
     }
