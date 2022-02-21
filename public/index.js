@@ -132,10 +132,22 @@ function playVideo(){
     remoteVideo.play()
     incoming_call.hidden = true
     incoming_call.removeEventListener('click', playVideo)
+    openFullscreen()
+
 }
 
-async function changeVideoInput(){
+function openFullscreen() {
+    if (remoteVideo.requestFullscreen) {
+      remoteVideo.requestFullscreen();
+    } else if (remoteVideo.webkitRequestFullscreen) { /* Safari */
+      remoteVideo.webkitRequestFullscreen();
+    } else if (remoteVideo.msRequestFullscreen) { /* IE11 */
+      remoteVideo.msRequestFullscreen();
+    }
+}
 
+
+async function changeVideoInput(){
     try{
         stopTracks()
 
@@ -243,6 +255,7 @@ socket.on('answer', data => {
     peer.ontrack = e => {
         stream.addTrack(e.track)
         remoteVideo.srcObject = stream
+        openFullscreen()
         console.log(e)
     }
 })
