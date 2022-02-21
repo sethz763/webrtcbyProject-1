@@ -222,11 +222,11 @@ function acceptOffer(){
 
     incoming_call.hidden = true
     incoming_call.removeEventListener('click', acceptOffer)
-    remoteVideo.oncanplay = function(){
+    //remoteVideo.oncanplay = function(){
         incoming_call.innerHTML = "READY - CLICK TO START"
         incoming_call.hidden = false;
         incoming_call.addEventListener("click", playVideo)
-    }
+    //}
 }
 
 //receive offer
