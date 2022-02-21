@@ -149,11 +149,7 @@ async function changeVideoInput(){
         localVideo.srcObject = stream
         incoming_call.removeEventListener()
                
-        remoteVideo.oncanplay = function(){
-            incoming_call.text = "READY - CLICK TO START"
-            incoming_call.hidden = false;
-            incoming_call.addEventListener("click", playVideo)
-        }
+       
 
     }
     catch{
@@ -242,8 +238,12 @@ socket.on('answer', data => {
     peer.ontrack = e => {
         stream.addTrack(e.track)
         remoteVideo.srcObject = stream
+
+        incoming_call.removeEventListener()
         remoteVideo.oncanplay = function(){
-            remoteVideo.play()
+            incoming_call.text = "READY - CLICK TO START"
+            incoming_call.hidden = false;
+            incoming_call.addEventListener("click", playVideo)
         }
         console.log(e)
     }
