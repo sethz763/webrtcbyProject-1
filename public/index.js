@@ -130,7 +130,7 @@ function playVideo(){
     localVideo.play()
     remoteVideo.play()
     incoming_call.hidden = true
-    incoming_call.removeEventListener()
+    incoming_call.removeEventListener('click', playVideo)
 }
 
 async function changeVideoInput(){
@@ -209,29 +209,29 @@ const createAnswer = async(destination) => {
     }
 }
 
+function acceptOffer(){
+    peer.setRemoteDescription(data.offer)
+    let stream = new MediaStream()
+    createAnswer(data.fromSocketId)
+    peer.ontrack = e => {
+        stream.addTrack(e.track)
+        remoteVideo.srcObject = stream
+        console.log(e)
 
-//receive offer
-socket.on('offer', data=>{
-    incoming_call.hidden=false
-    incoming_call.addEventListener("click", ()=>{
-
-            peer.setRemoteDescription(data.offer)
-            let stream = new MediaStream()
-            createAnswer(data.fromSocketId)
-            peer.ontrack = e => {
-                stream.addTrack(e.track)
-                remoteVideo.srcObject = stream
-                console.log(e)
-
-            incoming_call.hidden = true
-            incoming_call.removeEventListener()
-        }
-    })
+    incoming_call.hidden = true
+    incoming_call.removeEventListener('click', acceptOffer)
     remoteVideo.oncanplay = function(){
         incoming_call.innerHTML = "READY - CLICK TO START"
         incoming_call.hidden = false;
         incoming_call.addEventListener("click", playVideo)
     }
+}
+
+//receive offer
+socket.on('offer', data=>{
+    incoming_call.hidden=false
+    incoming_call.addEventListener("click", acceptOffer)
+    
 })
 
 //receive answer
