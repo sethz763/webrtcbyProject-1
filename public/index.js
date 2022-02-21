@@ -14,7 +14,7 @@ const configuaration = {iceServers:[{urls: 'stun:stun.l.google.com:19302'}]}
 let peer = new RTCPeerConnection(configuaration)
 let toSocketId, fromSocketId
 
-const offerData
+var offerData
 
 var camera_selector = document.getElementById('camera_selector')
 
