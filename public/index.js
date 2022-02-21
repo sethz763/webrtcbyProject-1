@@ -109,9 +109,14 @@ const openMediaDevices = async() =>{
                 width:1280,
                 echoCancellation:true})
                 localVideo.srcObject = stream
+                localVideo.oncanplay = function(){
+                    localVideo.play()
+                }
         } ) 
 
         camera_selector.addEventListener('change', changeVideoInput)
+
+        tracks = stream.getTracks()
 
         return stream
     }catch(error){
@@ -130,12 +135,14 @@ async function changeVideoInput(){
                     height: {ideal:720}},
             audio:true})
     
-        const tracks = stream.getTracks()
+        tracks = stream.getTracks()
         const senders = peer.getSenders()
         senders.forEach(sender=>tracks.forEach(track=>sender.replaceTrack(track)))
     
         localVideo.srcObject = stream
-        localVideo.play()
+        localVideo.oncanplay = function(){
+            localVideo.play()
+        }
     }
     catch{
         console.log("problem with camera selector")
@@ -173,7 +180,6 @@ const createAnswer = async(destination) => {
         let stream = await openMediaDevices()
         stream.getTracks().forEach(track => peer.addTrack(track))
        
-        
         let answer = await peer.createAnswer()
         peer.setLocalDescription(new RTCSessionDescription(answer))
 
@@ -187,6 +193,9 @@ const createAnswer = async(destination) => {
         
         //send answer to server
         socket.emit('answer', {'answer': answer, 'destination':destination})
+
+        mute.addEventListener('click', muteTracks)
+        stop.addEventListener('click', stopTracks)
 
     }catch(error){
         console.log(error)
@@ -206,8 +215,9 @@ socket.on('offer', data=>{
             peer.ontrack = e => {
                 stream.addTrack(e.track)
                 remoteVideo.srcObject = stream
-                remoteVideo.play()
-                localVideo.play()
+                remoteVideo.oncanplay = function(){
+                    remoteVideo.play()
+                }
                 console.log(e)
             incoming_call.hidden = true;
         }
@@ -221,7 +231,7 @@ socket.on('answer', data => {
     peer.ontrack = e => {
         stream.addTrack(e.track)
         remoteVideo.srcObject = stream
-        if(getConfirmation){
+        remoteVideo.oncanplay = function(){
             remoteVideo.play()
         }
         console.log(e)
