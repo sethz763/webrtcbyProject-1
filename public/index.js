@@ -26,7 +26,7 @@ const newCodecList = preferCodec(codecList, codec_type)
 console.log("after modifying codec list")
 console.log(newCodecList)
 
-stop.innerHTML = "END CALL"
+//stop.innerHTML = "END CALL"
 
 changeVideoCodec(codec_type)
 
@@ -222,11 +222,11 @@ function acceptOffer(){
 
     incoming_call.hidden = true
     incoming_call.removeEventListener('click', acceptOffer)
-    //remoteVideo.oncanplay = function(){
+    remoteVideo.oncanplay = function(){
         incoming_call.innerHTML = "READY - CLICK TO START"
         incoming_call.hidden = false;
         incoming_call.addEventListener("click", playVideo)
-    //}
+    }
 }
 
 //receive offer
