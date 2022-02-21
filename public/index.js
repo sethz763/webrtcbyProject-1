@@ -7,11 +7,13 @@ const call= document.getElementById('call')
 const stop= document.getElementById('stop')
 const mute= document.getElementById('mute')
 const unMute= document.getElementById('unMute')
+var incoming_call = document.getElementById("accept_call")
 const toSocket = document.getElementById('toSocket')
 let tracks = []
 const configuaration = {iceServers:[{urls: 'stun:stun.l.google.com:19302'}]}
 let peer = new RTCPeerConnection(configuaration)
 let toSocketId, fromSocketId
+
 
 var camera_selector = document.getElementById('camera_selector')
 
@@ -109,9 +111,7 @@ const openMediaDevices = async() =>{
                 width:1280,
                 echoCancellation:true})
                 localVideo.srcObject = stream
-                localVideo.oncanplay = function(){
-                    localVideo.play()
-                }
+                
         } ) 
 
         camera_selector.addEventListener('change', changeVideoInput)
@@ -122,6 +122,13 @@ const openMediaDevices = async() =>{
     }catch(error){
         console.log(error)
     }    
+}
+
+function playVideo(){
+    localVideo.play()
+    remoteVideo.play()
+    incoming_call.hidden = true
+    incoming_call.removeEventListener()
 }
 
 async function changeVideoInput(){
@@ -140,9 +147,14 @@ async function changeVideoInput(){
         senders.forEach(sender=>tracks.forEach(track=>sender.replaceTrack(track)))
     
         localVideo.srcObject = stream
-        localVideo.oncanplay = function(){
-            localVideo.play()
+        incoming_call.removeEventListener()
+               
+        remoteVideo.oncanplay = function(){
+            incoming_call.text = "READY - CLICK TO START"
+            incoming_call.hidden = false;
+            incoming_call.addEventListener("click", playVideo)
         }
+
     }
     catch{
         console.log("problem with camera selector")
@@ -205,7 +217,6 @@ const createAnswer = async(destination) => {
 
 //receive offer
 socket.on('offer', data=>{
-    var incoming_call = document.getElementById("accept_call")
     incoming_call.hidden=false
     incoming_call.addEventListener("click", ()=>{
 
@@ -277,7 +288,7 @@ socket.on('calleeCandidate', data =>{
 socket.on('users_available', users =>{
     document.getElementById('users').innerHTML = "<h3 id='heading'>online users</h3>";
     users.forEach(user=>{
-        if(user != fromSocket){
+        if(user != fromSocket.id){
             document.getElementById('users').innerHTML += "" +
             "<form class='form-inline'>" +
             "<label class='mb-2 mr-sm-2'>Other User Socket is:  </label>"+
