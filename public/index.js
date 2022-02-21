@@ -222,6 +222,7 @@ socket.on('offer', data=>{
                 console.log(e)
 
             incoming_call.hidden = true
+            incoming_call.text = "hi"
             incoming_call.removeEventListener()
         }
     })
