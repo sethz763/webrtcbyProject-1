@@ -217,6 +217,7 @@ function acceptOffer(){
         stream.addTrack(e.track)
         remoteVideo.srcObject = stream
         console.log(e)
+    }
 
     incoming_call.hidden = true
     incoming_call.removeEventListener('click', acceptOffer)
