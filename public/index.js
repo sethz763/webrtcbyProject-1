@@ -16,9 +16,9 @@ const configuaration = {iceServers:[{urls: 'stun:stun.l.google.com:19302'}]}
 let peer = new RTCPeerConnection(configuaration)
 let toSocketId, fromSocketId
 
-const usernamesMap = new Map()
+var offerData = new Object()
 
-var offerData
+const usernamesMap = new Map()
 
 var camera_selector = document.getElementById('camera_selector')
 
@@ -171,31 +171,49 @@ async function changeVideoInput(){
     
 }
 
+//username to socket
 function usernameToSocket(username){
     return usernamesMap.get(username)
 }
 
+function socketToUsername(socket){
+    for(i=0; i<usernamesMap.size; i++){
+        if(usernamesMap.values(i) == socket){
+            console.log("call from" + usernamesMap.key(i))
+            return usernamesMap.key(i)
+        }
+    }
+}
+
+Map.prototype.getKey = function(targetValue){
+    let iterator = this[Symbol.iterator]()
+    for (const [key, value] of iterator) {
+      if(value === targetValue)
+        return key;
+    }
+  }
+
     
 //create offer
-const createOffer = async() => {
+async function createOffer() {
     try {
         let stream = await openMediaDevices()
-        stream.getTracks().forEach(track => peer.addTrack(track)) 
-        
+        stream.getTracks().forEach(track => peer.addTrack(track))
+
         let offer = await peer.createOffer()
         peer.setLocalDescription(new RTCSessionDescription(offer))
-        
+
         //ice candidate
         peer.addEventListener('icecandidate', e => {
-            if(e.candidate){
+            if (e.candidate) {
                 console.log(e.candidate)
-                socket.emit('callerCandidate', {'candidate':e.candidate, 'fromSocketId':fromSocketId, 'toSocketId':toSocketId })
+                socket.emit('callerCandidate', { 'candidate': e.candidate, 'fromSocketId': fromSocketId, 'toSocketId': toSocketId })
             }
         })
         //send offer to server
         toSocketId = usernameToSocket(toSocket.value)
         console.log("THIS IS THE MAPPED ID" + toSocketId)
-        socket.emit('offer', {'offer':offer, 'fromSocketId':fromSocketId, 'toSocketId':toSocketId })
+        socket.emit('offer', { 'offer': offer, 'fromSocketId': fromSocketId, 'toSocketId': toSocketId })
     } catch (error) {
         console.log(error)
     }
@@ -236,27 +254,32 @@ remoteVideo.oncanplay = function(){
     playVideo()
 }
 
-function acceptOffer(){
+function acceptOffer(socket){
     answer_call_button.hidden = true
     answer_call_button.removeEventListener('click', acceptOffer)
-    
 
-    let stream = new MediaStream()
-    createAnswer(offerData.fromSocketId)
-    peer.ontrack = e => {
-        stream.addTrack(e.track)
-        remoteVideo.srcObject = stream
-        console.log(e)
-    }
+    createAnswer(socket)
+    console.log("Socket" + socket)
 }
 
 //receive offer
 socket.on('offer', data=>{
     answer_call_button.hidden=false
-    answer_call_button.innerHTML = "YOU HAVE A CALL FROM" + data.fromSocketId
+    answer_call_button.innerHTML = "YOU HAVE A CALL FROM " + usernamesMap.getKey(data.fromSocketId)
+
     peer.setRemoteDescription(data.offer)
-    offerData = data
-    answer_call_button.addEventListener("click", acceptOffer)
+
+    let stream = new MediaStream()
+    
+    peer.ontrack = e => {
+        stream.addTrack(e.track)
+        remoteVideo.srcObject = stream
+        console.log(e)
+    }
+    
+    answer_call_button.addEventListener("click", (e)=>acceptOffer(data.fromSocketId))
+    
+        
 })
 
 //receive answer
@@ -266,7 +289,6 @@ socket.on('answer', data => {
     peer.ontrack = e => {
         stream.addTrack(e.track)
         remoteVideo.srcObject = stream
-        openFullscreen()
         console.log(e)
     }
 })
@@ -332,28 +354,19 @@ socket.on('users_available', data =>{
             usernamesMap.set(users[i], sockets[i])
         }
         
-        if(sockets[i] != socket.id){
+        var s = document.createElement('DIV');
+        s.className = 'clickable';
+        s.onclick = clicks;
             
-            //var newDiv = document.createElement('')
-            var s = document.createElement('DIV');
-            s.className = 'clickable';
-            s.onclick = clicks;
-                
-            s.textContent=users[i];
-            div.appendChild(s)
-            
-            //"<button type='button' class='btn btn-link' id='"+users[i]+"'>"+users[i]+"</button> "
-
-        /*    
-            "<label class='mb-2 mr-sm-2'>Other User:  </label>"+
-            "<label class='mb-2 mr-sm-2'>"+  + " : " + "</label>"+
-            "<label class='mb-2 mr-sm-2'> SOCKET ID: "+ sockets[i] + "</label>"+ */
-            //"</form>"
-
-           // var btn =document.getElementById(users[i])
-           // btn.addEventListener('click', function(){console.log("button pressed" + btn.id)})
-
-            }
+        s.textContent=users[i];
+        s.style.fontSize="25px"
+        if(sockets[i]!=fromSocketId){
+            s.style.color="blue"
+            s.style.fontWeight = "bold"
+        }
+        
+        div.appendChild(s)
+        
         }
     }
 )
