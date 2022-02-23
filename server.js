@@ -48,6 +48,7 @@ function removeFromUserList(deadSocket){
         i++
         online_users.delete(deadSocket)
     })  
+    io.emit('users_available', {'sockets':socket_tracker, 'usernames':usernames})
 }
 
 
@@ -132,6 +133,8 @@ io.on('connection', (socket) =>{
 
         io.emit('users_available', {'sockets':socket_tracker, 'usernames':usernames}) 
     })
+
+
 
 })
 

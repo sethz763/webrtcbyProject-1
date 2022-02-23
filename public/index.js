@@ -26,7 +26,7 @@ let codecList = RTCRtpSender.getCapabilities("video").codecs;
 console.log(codecList)
 
 //reorder list of codecs
-const codec_type = ["video/VP8","video/VP9", "video/VP9"]  
+const codec_type = ["video/VP9","video/VP9", "video/VP8"]  
 const newCodecList = preferCodec(codecList, codec_type)
 changeVideoCodec(codec_type)
 
