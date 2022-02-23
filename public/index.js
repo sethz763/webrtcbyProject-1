@@ -1,5 +1,5 @@
 const socket = io()
-var fromSocket = null//document.getElementById('userId')
+var fromSocket = "test"  //document.getElementById('userId')
 const heading = document.getElementById('heading')
 const localVideo = document.getElementById('localVideo')
 const remoteVideo = document.getElementById('remoteVideo')
