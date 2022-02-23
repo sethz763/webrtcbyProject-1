@@ -86,6 +86,10 @@ io.on('connection', (socket) =>{
         io.to(data.destination).emit('calleeCandidate', data.candidate)
     })
 
+    socket.on('stop', data =>{
+        io.to(data.toSocketId).emit('stop')
+    })
+
     //add username and socket
     socket.on('username', data=> {
         console.log("attempting to add user")

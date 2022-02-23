@@ -30,6 +30,11 @@ const codec_type = ["video/VP9","video/VP9", "video/VP8"]
 const newCodecList = preferCodec(codecList, codec_type)
 changeVideoCodec(codec_type)
 
+function initializePeer(){
+    peer = new RTCPeerConnection(configuaration)
+    changeVideoCodec(codec_type)
+}
+
 //Get socket ID
 socket.on('connect', () => {
     //fromSocket.innerHTML = socket.id
@@ -134,13 +139,25 @@ const openMediaDevices = async() =>{
 }
 
 function openFullscreen() {
-    localVideo.hidden = true
     if (remoteVideo.requestFullscreen) {
       remoteVideo.requestFullscreen();
     } else if (remoteVideo.webkitRequestFullscreen) { /* Safari */
       remoteVideo.webkitRequestFullscreen();
     } else if (remoteVideo.msRequestFullscreen) { /* IE11 */
       remoteVideo.msRequestFullscreen();
+    }
+}
+
+function exitFullscreen(){
+    if (document.fullscreenElement && document.fullscreenElement.nodeName == 'VIDEO') {
+        if(document.exitFullscreen)
+            document.exitFullscreen();
+        else if (document.webkitExitFullscreen)
+            document.webkitExitFullscreen();
+        else if (document.mozCancelFullScreen)
+            document.mozCancelFullScreen();
+        else if (document.msExitFullscreen)
+            document.msExitFullscreen();
     }
 }
 
@@ -177,6 +194,7 @@ function usernameToSocket(username){
     return usernamesMap.get(username)
 }
 
+//returns username from socket input
 function socketToUsername(socket){
     for(i=0; i<usernamesMap.size; i++){
         if(usernamesMap.values(i) == socket){
@@ -186,6 +204,7 @@ function socketToUsername(socket){
     }
 }
 
+//returns key from value on given map pair
 Map.prototype.getKey = function(targetValue){
     let iterator = this[Symbol.iterator]()
     for (const [key, value] of iterator) {
@@ -213,7 +232,6 @@ async function createOffer() {
         })
         //send offer to server
         toSocketId = usernameToSocket(toSocket.value)
-        console.log("THIS IS THE MAPPED ID" + toSocketId)
         socket.emit('offer', { 'offer': offer, 'fromSocketId': fromSocketId, 'toSocketId': toSocketId })
     } catch (error) {
         console.log(error)
@@ -256,9 +274,9 @@ remoteVideo.oncanplay = function(){
 }
 
 function acceptOffer(socket){
-    answer_call_button.hidden = true
+    //answer_call_button.hidden = true
     answer_call_button.removeEventListener('click', acceptOffer)
-
+    stop.addEventListener('click', stopTracks)
     createAnswer(socket)
     console.log("Socket" + socket)
 }
@@ -316,7 +334,11 @@ const unMuteTracks = ()  => {
 const stopTracks = () => {
     tracks.forEach( track => track.stop()
     )
+    socket.emit('stop', {'toSocketId': toSocketId})
     peer.close()
+    exitFullscreen()
+    initializePeer()
+    answer_call_button.hidden=true;
 }
 
 //caller candidate
@@ -333,6 +355,11 @@ socket.on('calleeCandidate', data =>{
 
 socket.on('error_username_taken', data=>{
     text="Username Already Used"
+})
+
+socket.on('stop', () =>{
+    stopTracks()
+    exitFullscreen()
 })
 
 //handle user selection
