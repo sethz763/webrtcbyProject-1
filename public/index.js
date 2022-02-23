@@ -1,5 +1,5 @@
 const socket = io()
-const fromSocket = document.getElementById('userId')
+const fromSocket = null//document.getElementById('userId')
 const heading = document.getElementById('heading')
 const localVideo = document.getElementById('localVideo')
 const remoteVideo = document.getElementById('remoteVideo')
@@ -32,7 +32,8 @@ changeVideoCodec(codec_type)
 
 //Get socket ID
 socket.on('connect', () => {
-    fromSocket.innerHTML = socket.id
+    //fromSocket.innerHTML = socket.id
+    fromSocket = socket.id
     fromSocketId = socket.id
 })
 
