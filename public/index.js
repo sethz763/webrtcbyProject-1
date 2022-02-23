@@ -374,7 +374,7 @@ socket.on('users_available', data =>{
     }
 )
 
-var text = "Seth's Peer to Peer Test - "
+var text = "SETH'S P2P - "
 peer.addEventListener('connectionstatechange', event =>{
     if (peer.connectionState === 'connected') {
         // Peers connected!
