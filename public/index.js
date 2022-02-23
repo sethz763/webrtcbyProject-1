@@ -7,12 +7,16 @@ const call= document.getElementById('call')
 const stop= document.getElementById('stop')
 const mute= document.getElementById('mute')
 const unMute= document.getElementById('unMute')
-var incoming_call = document.getElementById("accept_call")
+var answer_call_button = document.getElementById("accept_call")
+const update_username_button = document.getElementById('update_username')
+update_username_button.addEventListener('click', updateUsername)
 const toSocket = document.getElementById('toSocket')
 let tracks = []
 const configuaration = {iceServers:[{urls: 'stun:stun.l.google.com:19302'}]}
 let peer = new RTCPeerConnection(configuaration)
 let toSocketId, fromSocketId
+
+const usernamesMap = new Map()
 
 var offerData
 
@@ -21,13 +25,9 @@ var camera_selector = document.getElementById('camera_selector')
 let codecList = RTCRtpSender.getCapabilities("video").codecs;
 console.log(codecList)
 
-const codec_type = ["video/VP9","video/VP8"]  
+//reorder list of codecs
+const codec_type = ["video/VP8","video/VP9", "video/VP9"]  
 const newCodecList = preferCodec(codecList, codec_type)
-console.log("after modifying codec list")
-console.log(newCodecList)
-
-//stop.innerHTML = "END CALL"
-
 changeVideoCodec(codec_type)
 
 //Get socket ID
@@ -36,8 +36,13 @@ socket.on('connect', () => {
     fromSocketId = socket.id
 })
 
+function updateUsername(){
+    username = username_entry.value
+    socket.emit('username', {'socket':socket.id, 'username':username})
+}
 
-//change codec
+
+//reorganize codec priority
 function changeVideoCodec(mimeType) {
     const transceivers = peer.getTransceivers();
   
@@ -51,9 +56,9 @@ function changeVideoCodec(mimeType) {
   })
 }
 
+//set bitrate
 async function setVideoParams(sender, bitrate) {
     const params = sender.getParameters();
-
     params.encodings[0].maxBitrate = bitrate;
     await sender.setParameters(params);
   }
@@ -76,7 +81,7 @@ function preferCodec(codecs, mimeType) {
     return allSortedCodecs
 }
  
-//get list of all media devices
+//get list of all media devices and update selector
 async function updateCameraList() {
     var devices = await navigator.mediaDevices.enumerateDevices();
     var cameras = devices.filter(device =>device.kind === 'videoinput')
@@ -127,16 +132,8 @@ const openMediaDevices = async() =>{
     }    
 }
 
-function playVideo(){
-    localVideo.play()
-    remoteVideo.play()
-    incoming_call.hidden = true
-    incoming_call.removeEventListener('click', playVideo)
-    openFullscreen()
-
-}
-
 function openFullscreen() {
+    localVideo.hidden = true
     if (remoteVideo.requestFullscreen) {
       remoteVideo.requestFullscreen();
     } else if (remoteVideo.webkitRequestFullscreen) { /* Safari */
@@ -146,6 +143,10 @@ function openFullscreen() {
     }
 }
 
+function playVideo(){
+    localVideo.play()
+    remoteVideo.play()
+}
 
 async function changeVideoInput(){
     try{
@@ -169,6 +170,11 @@ async function changeVideoInput(){
     }
     
 }
+
+function usernameToSocket(username){
+    return usernamesMap.get(username)
+}
+
     
 //create offer
 const createOffer = async() => {
@@ -187,7 +193,8 @@ const createOffer = async() => {
             }
         })
         //send offer to server
-        toSocketId = toSocket.value
+        toSocketId = usernameToSocket(toSocket.value)
+        console.log("THIS IS THE MAPPED ID" + toSocketId)
         socket.emit('offer', {'offer':offer, 'fromSocketId':fromSocketId, 'toSocketId':toSocketId })
     } catch (error) {
         console.log(error)
@@ -222,8 +229,18 @@ const createAnswer = async(destination) => {
     }
 }
 
+remoteVideo.oncanplay = function(){
+    answer_call_button.innerHTML = "GO FULL SCREEN"
+    answer_call_button.hidden = false;
+    answer_call_button.addEventListener("click", openFullscreen)
+    playVideo()
+}
+
 function acceptOffer(){
-    peer.setRemoteDescription(offerData.offer)
+    answer_call_button.hidden = true
+    answer_call_button.removeEventListener('click', acceptOffer)
+    
+
     let stream = new MediaStream()
     createAnswer(offerData.fromSocketId)
     peer.ontrack = e => {
@@ -231,21 +248,15 @@ function acceptOffer(){
         remoteVideo.srcObject = stream
         console.log(e)
     }
-
-    incoming_call.hidden = true
-    incoming_call.removeEventListener('click', acceptOffer)
-    remoteVideo.oncanplay = function(){
-        incoming_call.innerHTML = "READY - CLICK TO START"
-        incoming_call.hidden = false;
-        incoming_call.addEventListener("click", playVideo)
-    }
 }
 
 //receive offer
 socket.on('offer', data=>{
-    incoming_call.hidden=false
+    answer_call_button.hidden=false
+    answer_call_button.innerHTML = "YOU HAVE A CALL FROM" + data.fromSocketId
+    peer.setRemoteDescription(data.offer)
     offerData = data
-    incoming_call.addEventListener("click", acceptOffer)
+    answer_call_button.addEventListener("click", acceptOffer)
 })
 
 //receive answer
@@ -295,20 +306,57 @@ socket.on('calleeCandidate', data =>{
     console.log(data)
 })
 
+socket.on('error_username_taken', data=>{
+    text="Username Already Used"
+})
+
+//handle user selection
+function clicks() {
+    console.log(this.innerHTML)
+    toSocket.value = this.innerHTML
+  }
+
 //update list of users that are online
-socket.on('users_available', users =>{
+socket.on('users_available', data =>{
+    
     document.getElementById('users').innerHTML = "<h3 id='heading'>online users</h3>";
-    users.forEach(user=>{
-        if(user != fromSocket.id){
-            document.getElementById('users').innerHTML += "" +
-            "<form class='form-inline'>" +
-            "<label class='mb-2 mr-sm-2'>Other User Socket is:  </label>"+
-            "<label class='mb-2 mr-sm-2'>"+ user + "</label>"+
-            "</form>"
+    let users = data.usernames
+    let sockets = data.sockets
+    const div = document.getElementById('users')
+    for(i=0;i < sockets.length; i++){
+        if(!usernamesMap.has(users[i])){
+            usernamesMap.set(users[i], sockets[i])
+        }
+        else{
+            usernamesMap.delete(users[i])
+            usernamesMap.set(users[i], sockets[i])
         }
         
-    })
-})
+        if(sockets[i] != socket.id){
+            
+            //var newDiv = document.createElement('')
+            var s = document.createElement('DIV');
+            s.className = 'clickable';
+            s.onclick = clicks;
+                
+            s.textContent=users[i];
+            div.appendChild(s)
+            
+            //"<button type='button' class='btn btn-link' id='"+users[i]+"'>"+users[i]+"</button> "
+
+        /*    
+            "<label class='mb-2 mr-sm-2'>Other User:  </label>"+
+            "<label class='mb-2 mr-sm-2'>"+  + " : " + "</label>"+
+            "<label class='mb-2 mr-sm-2'> SOCKET ID: "+ sockets[i] + "</label>"+ */
+            //"</form>"
+
+           // var btn =document.getElementById(users[i])
+           // btn.addEventListener('click', function(){console.log("button pressed" + btn.id)})
+
+            }
+        }
+    }
+)
 
 var text = "Seth's Peer to Peer Test - "
 peer.addEventListener('connectionstatechange', event =>{

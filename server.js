@@ -13,6 +13,9 @@ const httpPort = 4201
 const socketio = require('socket.io')
 
 const socket_tracker = []
+const usernames = []
+
+const online_users = new Map()
 
 
 app.use(express.static('public'))
@@ -29,35 +32,28 @@ httpsServer.listen(httpsPort, () =>{
 })
 
 var ip = require("ip");
+const { Console } = require("console")
 console.dir ( ip.address() );
 
 const io = socketio(httpsServer)
 const clients = []
-
-
-
-function updateSocketList(mySocket){
-    socket_tracker.push(mySocket)
-    
-    io.emit('users_available', socket_tracker)
-}
 
 function removeFromUserList(deadSocket){
     var i=0
     socket_tracker.forEach(socket => {
         if(deadSocket == socket){
             socket_tracker.splice(i,1)
+            usernames.splice(i,1)
         }
         i++
-    })
+        online_users.delete(deadSocket)
+    })  
 }
 
 
 
 io.on('connection', (socket) =>{
     console.log('user connected ', socket.id)
-
-    updateSocketList(socket.id)
 
     //test to see if I can see settings
     socket.on('settings', settings =>{
@@ -87,6 +83,54 @@ io.on('connection', (socket) =>{
     //callee candidate
     socket.on('calleeCandidate', data => {
         io.to(data.destination).emit('calleeCandidate', data.candidate)
+    })
+
+    //add username and socket
+    socket.on('username', data=> {
+        console.log("attempting to add user")
+        if(online_users.size < 1){
+            online_users.set(data.socket, data.username)
+            console.log("added first user")
+        }
+        else{
+            if(online_users.has(data.socket)){
+                console.log("deleting and replacing user")
+                online_users.delete(data.socket)
+                online_users.set(data.socket, data.username)
+            }
+            else{
+                console.log("entered else to add user")
+                online_users.forEach((username,socket)=>{
+                    console.log("entered for each loop to add user")
+                    if(username == data.username){
+                        io.to(data.socket).emit('error_username_taken', data.username)
+                        console.log("didn't add user")
+                    }
+                    else{
+                        online_users.set(data.socket, data.username)
+                        console.log("added user")
+                        if(socket_tracker.length < online_users.size){
+                            socket_tracker.push(data.socket)
+                            usernames.push(data.username)
+                        }   
+                    }
+                })
+            }
+        }
+        
+        online_users.forEach((username,socket)=>{
+            console.log(username)
+            console.log(socket)
+        })
+            
+        i=0
+        online_users.forEach((username, socket) => {
+            socket_tracker[i]=socket
+            usernames[i]=username
+            i++
+        })
+
+        io.emit('users_available', {'sockets':socket_tracker, 'usernames':usernames}) 
     })
 
 })
