@@ -2,11 +2,61 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
     <link rel="shortcut icon" href="img/webrtc.JPEG">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <title>Seths Peer To Peer Web App</title>  
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.socket.io/4.4.0/socket.io.min.js" integrity="sha384-1fOn6VtTq3PWwfsOrk45LnYcGosJwzMHv+Xh/Jx5303FVOXzEnw0EpLv30mtjmlj" crossorigin="anonymous"></script>
+    <style>
+      body {background-color: powderblue;}
+      h1   {color: blue;}
+      p    {color: red;}
+    </style>
+    <style>
+      a.button4{
+        display:inline-block;
+        padding:0.4em 0.9em;
+        margin:0 0.1em 0.1em 0;
+        border:0.16em solid rgba(255,255,255,0);
+        border-radius:1em;
+        box-sizing: border-box;
+        text-decoration:none;
+        font-family:'Roboto',sans-serif;
+        font-size: 25px;
+        font-weight:500;
+        color:#FFFFFF;
+        text-shadow: 0 0.04em 0.04em rgba(0,0,0,0.35);
+        text-align:center;
+        transition: all 0.2s;
+      }
+        a.button4:hover{
+        border-color: rgba(255,255,255,1);
+      }
+      @media all and (max-width:30em){
+        a.button4{
+        display:block;
+        margin:0.2em auto;
+        }
+        }
+    </style>
+
+    <style> 
+      input {
+        width: 100%;
+        height:auto;
+        font-size: 25px;
+      }
+
+      label{
+        font-size: 25px;
+      }
+
+      select{
+        font-size: 25px;
+      }
+    </style>
+      
   </head>
   <body>
 
@@ -23,21 +73,24 @@
   <h3 id="heading">online users</h3>
   
 </div>
+<div class="container">
+  <a type="button" class="button4" style="background-color:rgb(31, 115, 211)" id="update_username">SUBMIT USERNAME</a>
+</div>
 
 <div class="container">
   <form class="">
-    <label class="mb-2 mr-sm-2">ENTER YOUR USERNAME</label>
-    <input type="text" class="form-control mb-2 mr-sm-2" id="username_entry" placeholder="Enter Your Name">
-    <button type="button" class="btn btn-primary mb-2" id="update_username">UPDATE USERNAME</button>
-    <label class="mb-2 mr-sm-2">Copy another user's ID to make connection</label>
-    <input type="text" class="form-control mb-2 mr-sm-2" id="toSocket" placeholder="Enter mobile">
-    <button type="button" class="btn btn-primary mb-2" id="call">Start</button>
-    <button type="button" class="btn btn-primary mb-2" id="stop" >Stop</button>
-    <button type="button" class="btn btn-primary mb-2" id="mute">Mute</button>
-    <button type="button" class="btn btn-primary mb-2" id="unMute">UnMute</button>
+    <label class="mb-2 mr-sm-2">ENTER YOUR USERNAME:</label>
+    <input type="text" id="username_entry" placeholder="Enter Your Name">
+    
+    <label class="mb-2 mr-sm-2">USER TO CALL:</label>
+    <input type="text" id="toSocket" placeholder="Enter User Name or Tap A User's Name">
+    <a type="button" class="button4" style="background-color:rgb(31, 115, 211)" id="call">CALL</a>
+    <a type="button" class="button4" style="background-color:rgb(31, 115, 211)" id="stop" >STOP</a>
+    <a type="button" class="button4" style="background-color:rgb(31, 115, 211)" id="mute">MUTE</a>
+    <a type="button" class="button4" style="background-color:rgb(31, 115, 211)" id="unMute">UNMUTE</a>
   </form>
   <div>
-    <button type="="button class="btn btn-primary btn-lg" id="accept_call" hidden="true">YOU HAVE AN INCOMING CALL - CLICK TO ACCEPT</button>
+    <button type=="button" class="btn btn-primary btn-lg" id="accept_call" hidden="true">YOU HAVE AN INCOMING CALL - CLICK TO ACCEPT</button>
   </div>
   <div>
     <select name="select#availableCameras" id="camera_selector">  

@@ -313,7 +313,9 @@ const unMuteTracks = ()  => {
 
 //stop tracks
 const stopTracks = () => {
-    tracks.forEach( track => track.stop() )
+    tracks.forEach( track => track.stop()
+    )
+    peer.close()
 }
 
 //caller candidate
