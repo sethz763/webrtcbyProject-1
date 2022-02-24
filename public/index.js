@@ -372,6 +372,7 @@ const unMuteTracks = ()  => {
 //stop button handler
 const stopButtonHandler = () =>{
     socket.emit('stop', {'toSocketId': toSocketId})
+    fullscreen_button.hidden=true
     stopTracks()
 }
 
@@ -405,7 +406,6 @@ socket.on('error_username_taken', data=>{
 socket.on('stop', data =>{
     stopTracks()
     exitFullscreen()
-    console.log("stop received")
 })
 
 //handle user selection
