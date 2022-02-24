@@ -8,37 +8,44 @@ const stop= document.getElementById('stop')
 const mute= document.getElementById('mute')
 const unMute= document.getElementById('unMute')
 var answer_call_button = document.getElementById("accept_call")
+const fullscreen_button = document.getElementById("fullscreen")
 const update_username_button = document.getElementById('update_username')
 update_username_button.addEventListener('click', updateUsername)
 const toSocket = document.getElementById('toSocket')
 let tracks = []
 const configuaration = {iceServers:[{urls: 'stun:stun.l.google.com:19302'}]}
-let peer = new RTCPeerConnection(configuaration)
+let peer = null//new RTCPeerConnection(configuaration)
 let toSocketId, fromSocketId
-
 var offerData = new Object()
-
 const usernamesMap = new Map()
 
+fullscreen_button.addEventListener("click", openFullscreen)
 var camera_selector = document.getElementById('camera_selector')
+camera_selector.addEventListener('change', changeVideoInput)
 
 let codecList = RTCRtpSender.getCapabilities("video").codecs;
-console.log(codecList)
 
 //reorder list of codecs
 const codec_type = ["video/VP9","video/VP9", "video/VP8"]  
-const newCodecList = preferCodec(codecList, codec_type)
-changeVideoCodec(codec_type)
 
 function initializePeer(){
-    peer = new RTCPeerConnection(configuaration)
-    changeVideoCodec(codec_type)
+        peer = new RTCPeerConnection(configuaration)
+        let newCodecList = preferCodec(codecList, codec_type)
+        changeVideoCodec(newCodecList)
+    
+    peer.addEventListener('connectionstatechange', event =>{
+        if (peer.connectionState === 'connected') {
+            // Peers connected!
+            text = "Connected! "
+        }
+    })
+    
 }
 
 //Get socket ID
 socket.on('connect', () => {
     //fromSocket.innerHTML = socket.id
-    fromSocket = socket.id
+    fromSocket = socket
     fromSocketId = socket.id
 })
 
@@ -49,7 +56,7 @@ function updateUsername(){
 
 
 //reorganize codec priority
-function changeVideoCodec(mimeType) {
+function changeVideoCodec(newCodecList) {
     const transceivers = peer.getTransceivers();
   
     transceivers.forEach(transceiver => {
@@ -99,6 +106,8 @@ async function updateCameraList() {
         cameraOption.value = camera.deviceId
         camera_selector.add(cameraOption)
     })     
+
+    console.log("devices" + cameras)
 }
 
 // Get the initial set of cameras connected
@@ -110,25 +119,25 @@ navigator.mediaDevices.addEventListener('devicechange', event => {
 });
 
 
+
+
 //get local media
 const openMediaDevices = async() =>{
     
         try{
-        let stream = await navigator.mediaDevices.getUserMedia(
-            {video:{ deviceId: camera_selector.value,
-                    width:{ideal: 1280},
-                    height: {ideal:720}},
-            audio:true})
-        
-        stream.getTracks().forEach(track => {
-            track.applyConstraints({height:720,
-                width:1280,
-                echoCancellation:true})
-                localVideo.srcObject = stream
-                
+            let stream = await navigator.mediaDevices.getUserMedia(
+                {video:{ deviceId: camera_selector.value,
+                        width:{ideal: 1280},
+                        height: {ideal:720}},
+                audio:true})
+            
+            stream.getTracks().forEach(track => {
+                track.applyConstraints({height:720,
+                    width:1280,
+                    echoCancellation:true})
+                    localVideo.srcObject = stream
+                    
         } ) 
-
-        camera_selector.addEventListener('change', changeVideoInput)
 
         tracks = stream.getTracks()
 
@@ -168,7 +177,7 @@ function playVideo(){
 
 async function changeVideoInput(){
     try{
-        stopTracks()
+        tracks.forEach( track => track.stop())
 
         let stream = await navigator.mediaDevices.getUserMedia(
             {video:{ deviceId: camera_selector.value,
@@ -217,8 +226,10 @@ Map.prototype.getKey = function(targetValue){
 //create offer
 async function createOffer() {
     try {
+        initializePeer()
         let stream = await openMediaDevices()
         stream.getTracks().forEach(track => peer.addTrack(track))
+        unMuteTracks()
 
         let offer = await peer.createOffer()
         peer.setLocalDescription(new RTCSessionDescription(offer))
@@ -259,7 +270,7 @@ const createAnswer = async(destination) => {
         socket.emit('answer', {'answer': answer, 'destination':destination})
 
         mute.addEventListener('click', muteTracks)
-        stop.addEventListener('click', stopTracks)
+        stop.addEventListener('click', stopButtonHandler)
 
     }catch(error){
         console.log(error)
@@ -267,16 +278,14 @@ const createAnswer = async(destination) => {
 }
 
 remoteVideo.oncanplay = function(){
-    answer_call_button.innerHTML = "GO FULL SCREEN"
-    answer_call_button.hidden = false;
-    answer_call_button.addEventListener("click", openFullscreen)
+    fullscreen_button.hidden = false;
     playVideo()
 }
 
 function acceptOffer(socket){
-    //answer_call_button.hidden = true
+    //initializePeer()
+    answer_call_button.hidden = true
     answer_call_button.removeEventListener('click', acceptOffer)
-    stop.addEventListener('click', stopTracks)
     createAnswer(socket)
     console.log("Socket" + socket)
 }
@@ -285,7 +294,7 @@ function acceptOffer(socket){
 socket.on('offer', data=>{
     answer_call_button.hidden=false
     answer_call_button.innerHTML = "YOU HAVE A CALL FROM " + usernamesMap.getKey(data.fromSocketId)
-
+    initializePeer()
     peer.setRemoteDescription(data.offer)
 
     let stream = new MediaStream()
@@ -296,6 +305,7 @@ socket.on('offer', data=>{
         console.log(e)
     }
     
+    toSocketId=data.fromSocketId
     answer_call_button.addEventListener("click", (e)=>acceptOffer(data.fromSocketId))
     
         
@@ -316,7 +326,7 @@ socket.on('answer', data => {
 call.addEventListener('click', () => {
     createOffer()
     mute.addEventListener('click', muteTracks)
-    stop.addEventListener('click', stopTracks)
+    stop.addEventListener('click', stopButtonHandler)
 })
 
 //mute tracks
@@ -330,15 +340,21 @@ const unMuteTracks = ()  => {
     tracks.forEach( track => track.enabled = true)
 }
 
-//stop tracks
-const stopTracks = () => {
-    tracks.forEach( track => track.stop()
-    )
+//stop button handler
+const stopButtonHandler = () =>{
+
     socket.emit('stop', {'toSocketId': toSocketId})
-    peer.close()
+
+    stopTracks()
+}
+
+//stop tracks
+const stopTracks = () => { 
+    tracks.forEach( track => track.enabled = false)
+    tracks.forEach( track => track.stop())
     exitFullscreen()
-    initializePeer()
-    answer_call_button.hidden=true;
+    peer.close()
+    fullscreen_button.hidden=true;
 }
 
 //caller candidate
@@ -357,9 +373,10 @@ socket.on('error_username_taken', data=>{
     text="Username Already Used"
 })
 
-socket.on('stop', () =>{
+socket.on('stop', data =>{
     stopTracks()
     exitFullscreen()
+    console.log("stop received")
 })
 
 //handle user selection
@@ -402,14 +419,6 @@ socket.on('users_available', data =>{
 )
 
 var text = "SETH'S P2P - "
-peer.addEventListener('connectionstatechange', event =>{
-    if (peer.connectionState === 'connected') {
-        // Peers connected!
-        text = "Connected! "
-    }
-})
-
-
 
 function addZero(i) {
     if (i < 10) {i = "0" + i}

@@ -87,7 +87,7 @@ io.on('connection', (socket) =>{
     })
 
     socket.on('stop', data =>{
-        io.to(data.toSocketId).emit('stop')
+        io.to(data.toSocketId).emit('stop', data)
     })
 
     //add username and socket
