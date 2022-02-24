@@ -377,13 +377,12 @@ const stopButtonHandler = () =>{
 
 //stop tracks
 const stopTracks = () => { 
-    tracks.forEach( track => track.enabled = false)
-    tracks.forEach( track => track.stop())
-    exitFullscreen()
-    peer.close()
+    tracks.forEach( track => track.enabled = false);
+    tracks.forEach( track => track.stop());
+    exitFullscreen();
+    peer.close();
     fullscreen_button.hidden=true;
-    answer_call_button.hidden=true
-    fullscreen_button.hidden=true
+    answer_call_button.hidden=true;
 }
 
 //caller candidate
