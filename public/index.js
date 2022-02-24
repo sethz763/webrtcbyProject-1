@@ -383,6 +383,7 @@ const stopTracks = () => {
     peer.close()
     fullscreen_button.hidden=true;
     answer_call_button.hidden=true
+    fullscreen_button.hidden=true
 }
 
 //caller candidate
