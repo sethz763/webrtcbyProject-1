@@ -19,6 +19,11 @@ let toSocketId, fromSocketId
 var offerData = new Object()
 const usernamesMap = new Map()
 
+var text = "SETH'S P2P - "
+var error_message = ""
+var error_message_display = document.getElementById('error_message')
+
+
 fullscreen_button.addEventListener("click", openFullscreen)
 var camera_selector = document.getElementById('camera_selector')
 camera_selector.addEventListener('change', changeVideoInput)
@@ -27,6 +32,16 @@ let codecList = RTCRtpSender.getCapabilities("video").codecs;
 
 //reorder list of codecs
 const codec_type = ["video/VP9","video/VP9", "video/VP8"]  
+
+function videoResize(){
+    localVideo.width = "100"
+    remoteVideo.width = "100"
+    if(window.innerHeight > window.innerWidth){
+        
+        //error_message_display.innerHTML= "Window Width: " + window.innerWidth
+    }
+}
+videoResize()
 
 function initializePeer(){
         peer = new RTCPeerConnection(configuaration)
@@ -53,6 +68,9 @@ function updateUsername(){
     username = username_entry.value
     socket.emit('username', {'socket':socket.id, 'username':username})
 }
+
+//get online users on loading
+updateUsername()
 
 
 //reorganize codec priority
@@ -119,8 +137,6 @@ navigator.mediaDevices.addEventListener('devicechange', event => {
 });
 
 
-
-
 //get local media
 const openMediaDevices = async() =>{
     
@@ -138,10 +154,9 @@ const openMediaDevices = async() =>{
                     localVideo.srcObject = stream
                     
         } ) 
-
         tracks = stream.getTracks()
-
         return stream
+
     }catch(error){
         console.log(error)
     }    
@@ -195,7 +210,6 @@ async function changeVideoInput(){
     catch{
         console.log("problem with camera selector")
     }
-    
 }
 
 //username to socket
@@ -221,7 +235,6 @@ Map.prototype.getKey = function(targetValue){
         return key;
     }
   }
-
     
 //create offer
 async function createOffer() {
@@ -307,8 +320,6 @@ socket.on('offer', data=>{
     
     toSocketId=data.fromSocketId
     answer_call_button.addEventListener("click", (e)=>acceptOffer(data.fromSocketId))
-    
-        
 })
 
 //receive answer
@@ -342,9 +353,7 @@ const unMuteTracks = ()  => {
 
 //stop button handler
 const stopButtonHandler = () =>{
-
     socket.emit('stop', {'toSocketId': toSocketId})
-
     stopTracks()
 }
 
@@ -370,7 +379,8 @@ socket.on('calleeCandidate', data =>{
 })
 
 socket.on('error_username_taken', data=>{
-    text="Username Already Used"
+    error_message="Username Already Used: " + username
+    error_message_display.innerHTML=error_message
 })
 
 socket.on('stop', data =>{
@@ -411,14 +421,16 @@ socket.on('users_available', data =>{
             s.style.color="blue"
             s.style.fontWeight = "bold"
         }
+        else{
+            error_message="LOGGED IN "
+            error_message_display.innerHTML=error_message
+        }
         
         div.appendChild(s)
         
         }
     }
 )
-
-var text = "SETH'S P2P - "
 
 function addZero(i) {
     if (i < 10) {i = "0" + i}

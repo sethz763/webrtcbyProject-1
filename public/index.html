@@ -81,6 +81,7 @@
 <div class="container">
   <form class="">
     <label class="mb-2 mr-sm-2">ENTER YOUR USERNAME:</label>
+    <label id="error_message"></label>
     <input type="text" id="username_entry" placeholder="Enter Your Name">
     
     <label class="mb-2 mr-sm-2">USER TO CALL:</label>
@@ -100,13 +101,13 @@
     </select>  
   </div>
   <div id="videoal">
-      <div class="video" >
+      <div>
           <h3>Local video </h3>
-          <video id="localVideo" autoplay controls autoplay="true" controls muted></video>
+          <video id="localVideo" width="95%" height="auto" autoplay controls autoplay="true" controls muted></video>
       </div>
-      <div class="video">
+      <div>
           <h3>Remote video </h3>
-          <video id="remoteVideo" autoplay controls autoplay="true"></video></video>
+          <video id="remoteVideo" width="95%" height="auto" autoplay controls autoplay="true"></video>
       </div>
   </div>
 </div>

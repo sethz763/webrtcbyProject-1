@@ -93,7 +93,7 @@ io.on('connection', (socket) =>{
     //add username and socket
     socket.on('username', data=> {
         console.log("attempting to add user")
-        if(online_users.size < 1){
+        if(online_users.size < 1 && data.username != ''){
             online_users.set(data.socket, data.username)
             console.log("added first user")
         }
