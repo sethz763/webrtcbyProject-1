@@ -19,6 +19,21 @@ let toSocketId, fromSocketId
 var offerData = new Object()
 const usernamesMap = new Map()
 
+let speech = new SpeechSynthesisUtterance()
+speech.lang = "en"
+speech.volume = 1
+let voices = []; // global array
+
+window.speechSynthesis.onvoiceschanged = () => {
+  // Get List of Voices
+  voices = window.speechSynthesis.getVoices();
+  // Initially set the First Voice in the Array.
+  speech.voice = voices[0];
+}
+speech.text = ("Hello and Welcome to Seth's Peer to Peer calling app... Enter your username to start")
+window.speechSynthesis.speak(speech)
+
+
 var text = "SETH'S P2P - "
 var error_message = ""
 var error_message_display = document.getElementById('error_message')
@@ -307,6 +322,8 @@ function acceptOffer(socket){
 socket.on('offer', data=>{
     answer_call_button.hidden=false
     answer_call_button.innerHTML = "YOU HAVE A CALL FROM " + usernamesMap.getKey(data.fromSocketId)
+    speech.text = ("YOU HAVE AN INCOMING CALL FROM" + usernamesMap.getKey(data.fromSocketId))
+    window.speechSynthesis.speak(speech)
     initializePeer()
     peer.setRemoteDescription(data.offer)
 
