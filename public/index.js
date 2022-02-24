@@ -34,14 +34,14 @@ let codecList = RTCRtpSender.getCapabilities("video").codecs;
 const codec_type = ["video/VP9","video/VP9", "video/VP8"]  
 
 function videoResize(){
-    localVideo.width = "100"
-    remoteVideo.width = "100"
+    localVideo.width = "199%"
+    remoteVideo.width = "100%"
     if(window.innerHeight > window.innerWidth){
         
         //error_message_display.innerHTML= "Window Width: " + window.innerWidth
     }
 }
-videoResize()
+//videoResize()
 
 function initializePeer(){
         peer = new RTCPeerConnection(configuaration)

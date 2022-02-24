@@ -41,6 +41,20 @@
         }
     </style>
 
+    <style>
+      .grid-container {
+        display: grid;
+        grid-template-columns: auto auto;
+        padding: 5px;
+      }
+      .grid-item {
+        padding: 5px;
+        font-size: 25;
+        color: black;
+        text-align: center;
+      }
+    </style>
+
     <style> 
       input {
         width: 100%;
@@ -55,6 +69,11 @@
       select{
         font-size: 20px;
         width: fit-content
+      }
+
+      p{
+        font-size: 20px;
+        color: black;
       }
     </style>
       
@@ -100,15 +119,15 @@
    
     </select>  
   </div>
-  <div id="videoal">
-      <div>
-          <h3>Local video </h3>
-          <video id="localVideo" width="95%" height="auto" autoplay controls autoplay="true" controls muted></video>
-      </div>
-      <div>
-          <h3>Remote video </h3>
-          <video id="remoteVideo" width="95%" height="auto" autoplay controls autoplay="true"></video>
-      </div>
+  <div class="grid-container" id="videoal">
+        <div class="grid-item">
+          <p>Local video </p>
+          <video id="localVideo" width="100%" height="auto" autoplay controls autoplay="true" controls muted></video>
+        </div>
+        <div class="grid-item">
+          <p>Remote video </p>
+          <video id="remoteVideo" width="100%" height="auto" autoplay controls autoplay="true"></video>
+        </div>
   </div>
 </div>
 <script src="index.js" type="text/javascript"></script>
