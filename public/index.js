@@ -335,6 +335,7 @@ socket.on('offer', data=>{
         console.log(e)
     }
     
+    stop.addEventListener('click', stopButtonHandler)
     toSocketId=data.fromSocketId
     answer_call_button.addEventListener("click", (e)=>acceptOffer(data.fromSocketId))
 })
