@@ -201,8 +201,8 @@ function exitFullscreen(){
     }
 }
 
-var alpha
-var beta
+var alpha = 0
+var beta = 0
 function handleOrientation(event){
     alpha += event.alpha
     beta += event.beta
