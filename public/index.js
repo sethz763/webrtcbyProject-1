@@ -204,11 +204,9 @@ function exitFullscreen(){
 var alpha = 0
 var beta = 0
 function handleOrientation(event){
-    alpha += event.alpha
-    beta += event.beta
+    if(event.beta >80 || event.beta < -80){
 
-    error_message_display.innerHTML = "gamma: " + event.gamma 
-    
+    }   
 }
 
 function playVideo(){
