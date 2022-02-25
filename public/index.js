@@ -207,7 +207,7 @@ function handleOrientation(event){
     alpha += event.alpha
     beta += event.beta
 
-    error_message_display.innerHTML = "alpha:" + event.alpha + ", beta: " + event.beta + ", gamma: " + event.gamma 
+    error_message_display.innerHTML = "gamma: " + event.gamma 
     
 }
 
