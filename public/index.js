@@ -38,6 +38,7 @@ var text = "SETH'S P2P - "
 var error_message = ""
 var error_message_display = document.getElementById('error_message')
 
+window.addEventListener("deviceorientation", handleOrientation, true);
 
 fullscreen_button.addEventListener("click", openFullscreen)
 var camera_selector = document.getElementById('camera_selector')
@@ -198,6 +199,16 @@ function exitFullscreen(){
         else if (document.msExitFullscreen)
             document.msExitFullscreen();
     }
+}
+
+var alpha
+var beta
+function handleOrientation(event){
+    alpha += event.alpha
+    beta += event.beta
+
+    error_message_display.innerHTML = "alpha:" + alpha + ", beta: " + beta
+    
 }
 
 function playVideo(){
