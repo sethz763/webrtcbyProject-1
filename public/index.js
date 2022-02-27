@@ -47,16 +47,6 @@ let codecList = RTCRtpSender.getCapabilities("video").codecs;
 //reorder list of codecs
 const codec_type = ["video/VP9","video/VP9", "video/VP8"]  
 
-function videoResize(){
-    localVideo.width = "199%"
-    remoteVideo.width = "100%"
-    if(window.innerHeight > window.innerWidth){
-        
-        //error_message_display.innerHTML= "Window Width: " + window.innerWidth
-    }
-}
-//videoResize()
-
 function initializePeer(){
         peer = new RTCPeerConnection(configuaration)
         let newCodecList = preferCodec(codecList, codec_type)
@@ -421,14 +411,16 @@ socket.on('users_available', data =>{
     let sockets = data.sockets
     const div = document.getElementById('users')
     for(i=0;i < sockets.length; i++){
-        if(!usernamesMap.has(users[i])){
-            usernamesMap.set(users[i], sockets[i])
-        }
-        else{
+        if(usernamesMap.has(users[i])){
             usernamesMap.delete(users[i])
             usernamesMap.set(users[i], sockets[i])
         }
+        else{
+            usernamesMap.set(users[i], sockets[i])
+        }
         
+
+        //create list of clickable usernames
         var s = document.createElement('DIV');
         s.className = 'clickable';
         s.onclick = clicks;
