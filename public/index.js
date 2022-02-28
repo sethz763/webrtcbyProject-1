@@ -411,15 +411,8 @@ socket.on('users_available', data =>{
     let sockets = data.sockets
     const div = document.getElementById('users')
     for(i=0;i < sockets.length; i++){
-        if(usernamesMap.has(users[i])){
-            usernamesMap.delete(users[i])
-            usernamesMap.set(users[i], sockets[i])
-        }
-        else{
-            usernamesMap.set(users[i], sockets[i])
-        }
+        usernamesMap.set(users[i], sockets[i])
         
-
         //create list of clickable usernames
         var s = document.createElement('DIV');
         s.className = 'clickable';
