@@ -1,0 +1,23 @@
+.nav-list{
+    display: inline-block;
+    background-color:gray;
+}
+
+.nav-list-item{
+  display: inline-block;
+}
+
+.nav-link{
+  font-size: 25px;
+  text-underline-offset: 10px;
+  font-weight: 900;
+  color: rgb(255, 255, 255);
+  text-decoration: none;
+  align-items: initial;
+  padding: 15px;
+  display: inline;
+}
+
+.nav-nav{
+    display: inline;
+}

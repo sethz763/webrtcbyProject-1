@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <%- include('partials/nav')  %>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <link rel="shortcut icon" href="img/webrtc.JPEG">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <title>Seths Peer To Peer Web App</title>  
+    <script src="https://cdn.socket.io/4.4.0/socket.io.min.js" integrity="sha384-1fOn6VtTq3PWwfsOrk45LnYcGosJwzMHv+Xh/Jx5303FVOXzEnw0EpLv30mtjmlj" crossorigin="anonymous"></script>
+  
+    <link href="/css/nav.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    
+  
+      
+  </head>
+  <body>
+
+<div class="container">
+  <h2 id="heading">SETH'S P2P</h2>
+</div>
+
+<div class="container" id="users">
+  <h3 id="heading">online users</h3>
+  
+</div>
+<div class="container">
+  <a type="button" class="button4" style="background-color:rgb(31, 115, 211)" id="update_username">SUBMIT USERNAME</a>
+  <a href="/login" type="button" class="button4" style="background-color:rgb(31, 115, 211)" id="login">LOGIN</a>
+</div>
+
+<div class="container">
+  <form class="">
+    <label class="mb-2 mr-sm-2">ENTER YOUR USERNAME:</label>
+    <label id="error_message"></label>
+    <input type="text" id="username_entry" placeholder="Enter Your Name">
+    
+    <label class="mb-2 mr-sm-2">USER TO CALL:</label>
+    <input type="text" id="toSocket" placeholder="Enter User Name or Tap A User's Name">
+    <a type="button" class="button4" style="background-color:rgb(31, 115, 211)" id="call">CALL</a>
+    <a type="button" class="button4" style="background-color:rgb(31, 115, 211)" id="stop" >STOP</a>
+    <a type="button" class="button4" style="background-color:rgb(31, 115, 211)" id="mute">MUTE</a>
+    <a type="button" class="button4" style="background-color:rgb(31, 115, 211)" id="unMute">UNMUTE</a>
+  </form>
+  <div>
+    <a type="button" class="button4" style="background-color:rgb(31, 115, 211)" id="accept_call" hidden="true">YOU HAVE AN INCOMING CALL - CLICK TO ACCEPT</a>
+    <a type="button" class="button4" style="background-color:rgb(31, 115, 211)" id="fullscreen" hidden="true">FULLSCREEN</a>
+  </div>
+  <div>
+    <select name="select#availableCameras" id="camera_selector">  
+   
+    </select>  
+  </div>
+  <div class="grid-container" id="videoal">
+        <div class="grid-item">
+          <p>Local video </p>
+          <video id="localVideo" width="100%" height="auto" autoplay controls autoplay="true" controls muted></video>
+        </div>
+        <div class="grid-item">
+          <p>Remote video </p>
+          <video id="remoteVideo" width="100%" height="auto" autoplay controls autoplay="true"></video>
+        </div>
+  </div>
+</div>
+<script src="public/index.js" type="text/javascript"></script>
+  </body>
+ </html>
