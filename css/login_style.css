@@ -60,3 +60,13 @@ body {
     transition: background-color 0.2s;
 }
 
+.register{
+    padding: 15px;
+    font-size: 20px;
+    font-weight: 900;
+    text-align: center;
+}
+
+.register-div{
+    text-align: center;
+}
