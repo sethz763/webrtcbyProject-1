@@ -30,9 +30,6 @@ window.speechSynthesis.onvoiceschanged = () => {
   // Initially set the First Voice in the Array.
   speech.voice = voices[0];
 }
-speech.text = ("Hello and Welcome to Seth's Peer to Peer calling app... Enter your username to start")
-window.speechSynthesis.speak(speech)
-
 
 var text = "SETH'S P2P - "
 var error_message = ""

@@ -2,6 +2,9 @@ const express = require("express")
 const http = require('http')
 const https = require("https")
 const fs = require('fs')
+const mysql = require('mysql')
+const session = require('express-session')
+const path = require('path')
 var privateKey = fs.readFileSync('domain.key')
 var certificate = fs.readFileSync('domain.crt')
 const credentials = {key: privateKey, cert: certificate}
@@ -17,8 +20,33 @@ const usernames = []
 
 const online_users = new Map()
 
+const connection = mysql.createConnection({
+    host    : 'localhost',
+    user    : 'root',
+    password:  '',
+    database: 'nodelogin'
 
-app.use(express.static('public'))
+})
+
+app.set('view engine', 'ejs');
+
+app.use("/public", express.static('public'));
+app.use("/login", express.static('login'));
+app.use("/css", express.static('css'));
+
+app.get('/',  function(req, res){
+    res.render('index');
+});
+
+app.get('', function(req, res){
+    res.render('index');
+});
+
+app.get('/login', function(req,res){
+    res.render('login')
+});
+
+
 
 const httpServer = http.createServer(app)
 const httpsServer = https.createServer(credentials, app)
