@@ -30,7 +30,7 @@ const online_users = new Map()
 const connection = mysql.createConnection({
     host    : 'localhost',
     user    : 'root',
-    password:  'swift',
+    password:  'password',
     database: 'nodelogin'
 })
 
