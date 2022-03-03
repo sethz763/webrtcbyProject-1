@@ -1,6 +1,14 @@
 
       body {background-color: powderblue;}
       h1   {color: blue;}
+      h2 {
+        font-weight: 800;
+      }
+      H3 {
+        font-weight:700;
+        background-color: cadetblue;
+        padding: 5px;
+      }
       p    {color: red;}
 
 

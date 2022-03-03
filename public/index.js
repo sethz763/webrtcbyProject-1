@@ -403,7 +403,7 @@ function clicks() {
 //update list of users that are online
 socket.on('users_available', data =>{
     
-    document.getElementById('users').innerHTML = "<h3 id='heading'>online users</h3>";
+    document.getElementById('users').innerHTML = "<h3 id='heading'>Online Users:</h3>";
     let users = data.usernames
     let sockets = data.sockets
     const div = document.getElementById('users')
@@ -417,9 +417,13 @@ socket.on('users_available', data =>{
             
         s.textContent=users[i];
         s.style.fontSize="25px"
+        s.style.backgroundColor = 'cadetblue';
+        s.style.paddingInline = '5px'
         if(sockets[i]!=fromSocketId){
             s.style.color="blue"
             s.style.fontWeight = "bold"
+            s.style.backgroundColor = 'cadetblue';
+            s.style.paddingInline = '5px'
         }
         else{
             error_message="LOGGED IN "
