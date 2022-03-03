@@ -20,17 +20,10 @@ const usernames = []
 
 const online_users = new Map()
 
-// const connection = mysql.createConnection({
-//     host    : 'localhost',
-//     user    : 'seth',
-//     password:  'SwiftSwaft#0',
-//     database: 'nodelogin'
-// })
-
 const connection = mysql.createConnection({
     host    : 'localhost',
-    user    : 'root',
-    password:  'password',
+    user    : 'seth',
+    password:  'SwiftSwaft#0',
     database: 'nodelogin'
 })
 
