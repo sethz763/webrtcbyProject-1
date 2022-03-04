@@ -27,6 +27,8 @@ const connection = mysql.createConnection({
     database: 'nodelogin'
 })
 
+//test
+
 const sessionMiddleware = session({
 	secret: 'secret',
 	resave: true,
