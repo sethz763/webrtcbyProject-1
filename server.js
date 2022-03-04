@@ -27,18 +27,14 @@ const connection = mysql.createConnection({
     database: 'nodelogin'
 })
 
-var result = connection.query('SELECT * FROM accounts', function (err, result, fields) {
-    if (err) throw err;
-    console.log(result);
-  });
-
-
-
-app.use(session({
+const sessionMiddleware = session({
 	secret: 'secret',
 	resave: true,
-	saveUninitialized: true
-}));
+	saveUninitialized: true,
+    cookie: {maxAge: 5 * 60 * 1000}
+})
+
+app.use(sessionMiddleware);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -50,16 +46,49 @@ app.use("/login", express.static('login'));
 app.use("/css", express.static('css'));
 
 app.get('/',  function(req, res){
+    if(req.session && req.session.username){
+        console.log('username: '+req.session.username + 'socket: ' + req.socket);
+        //updateUsernames({'socket':req.socket, 'username':req.session.username});
+    }
     res.render('index');
 });
 
 app.get('', function(req, res){
+    if(req.session && req.session.username){
+        console.log('username: '+io.socket.id + 'socket: ' + io.socket);
+        //updateUsernames({'socket':req.socket, 'username':req.session.username});
+    }
     res.render('index');
 });
 
 app.get('/login', function(req,res){
     res.render('login')
 });
+
+app.get('/register', function(req, res){
+    res.render('register')
+})
+
+app.post('/reg', function(req, res){
+    let email = req.body.email;
+    let username = req.body.username;
+    let password = req.body.password;
+    let passwordReentry = req.body.passwordReentry;
+
+    connection.query('SELECT * FROM accounts WHERE email = ?', [email], function(error, results, fields){
+        if(error) throw error;
+
+        if(results.length > 0){
+            response.send('email already registered - select forgot password to get your password emailed to you');
+        } else{
+            connection.query('INSERT INTO accounts (username, password, email) VALUES (?,?,?)', [username, password, email], function(err, results, fields){
+                if(err){throw err};
+
+                res.redirect('/login')
+            })
+        }
+    })
+})
 
 //login
 app.post('/auth', function(request, response) {
@@ -78,7 +107,7 @@ app.post('/auth', function(request, response) {
 				request.session.loggedin = true;
 				request.session.username = username;
 				// Redirect to home page
-				response.redirect('/home');
+				response.redirect('/');
 			} else {
 				response.send('Incorrect Username and/or Password!');
 			}			
@@ -102,6 +131,20 @@ app.get('/home', function(request, response) {
 	response.end();
 });
 
+app.get('/logout', function(req, res){
+    if (req.session) {
+        req.session.destroy(err => {
+          if (err) {
+            res.status(400).send('Unable to log out')
+          } else {
+            return res.redirect('/');
+          }
+        });
+      } else {
+        res.end()
+      }
+});
+
 const httpServer = http.createServer(app)
 const httpsServer = https.createServer(credentials, app)
 
@@ -115,6 +158,7 @@ httpsServer.listen(httpsPort, () =>{
 
 var ip = require("ip");
 const { Console } = require("console")
+const { response } = require("express")
 console.dir ( ip.address() );
 
 const io = socketio(httpsServer)
@@ -133,10 +177,66 @@ function removeFromUserList(deadSocket){
     io.emit('users_available', {'sockets':socket_tracker, 'usernames':usernames})
 }
 
+function updateUsernames(data){
+    console.log("attempting to add user")
+    if(online_users.size < 1 && data.username != ''){
+        online_users.set(data.socket, data.username)
+        console.log("added first user")
+    }
+    else{
+        if(online_users.has(data.socket)){
+            console.log("deleting and replacing user")
+            online_users.delete(data.socket)
+            online_users.set(data.socket, data.username)
+        }
+        else{
+            console.log("entered else to add user")
+            online_users.forEach((username,socket)=>{
+                console.log("entered for each loop to add user")
+                if(username == data.username){
+                    io.to(data.socket).emit('error_username_taken', data.username)
+                    console.log("didn't add user")
+                }
+                else{
+                    online_users.set(data.socket, data.username)
+                    console.log("added user")
+                    if(socket_tracker.length < online_users.size){
+                        socket_tracker.push(data.socket)
+                        usernames.push(data.username)
+                    }   
+                }
+            })
+        }
+    }
+    
+    online_users.forEach((username,socket)=>{
+        console.log(username)
+        console.log(socket)
+    })
+        
+    i=0
+    online_users.forEach((username, socket) => {
+        socket_tracker[i]=socket
+        usernames[i]=username
+        i++
+    })
 
+    io.emit('users_available', {'sockets':socket_tracker, 'usernames':usernames}) 
+}
+
+io.use((socket, next) =>{
+    sessionMiddleware(socket.request, {}, next);
+})
 
 io.on('connection', (socket) =>{
     console.log('user connected ', socket.id)
+    if(socket.request.session.loggedin){
+        console.log('A USER NAMED '+ socket.request.session.username +' IS LOGGED IN')
+        updateUsernames({'socket':socket.id,'username':socket.request.session.username})
+    }
+    else{
+        console.log('user is not logged in yet')
+    }
 
     //test to see if I can see settings
     socket.on('settings', settings =>{
@@ -172,52 +272,10 @@ io.on('connection', (socket) =>{
         io.to(data.toSocketId).emit('stop', data)
     })
 
+ 
     //add username and socket
     socket.on('username', data=> {
-        console.log("attempting to add user")
-        if(online_users.size < 1 && data.username != ''){
-            online_users.set(data.socket, data.username)
-            console.log("added first user")
-        }
-        else{
-            if(online_users.has(data.socket)){
-                console.log("deleting and replacing user")
-                online_users.delete(data.socket)
-                online_users.set(data.socket, data.username)
-            }
-            else{
-                console.log("entered else to add user")
-                online_users.forEach((username,socket)=>{
-                    console.log("entered for each loop to add user")
-                    if(username == data.username){
-                        io.to(data.socket).emit('error_username_taken', data.username)
-                        console.log("didn't add user")
-                    }
-                    else{
-                        online_users.set(data.socket, data.username)
-                        console.log("added user")
-                        if(socket_tracker.length < online_users.size){
-                            socket_tracker.push(data.socket)
-                            usernames.push(data.username)
-                        }   
-                    }
-                })
-            }
-        }
-        
-        online_users.forEach((username,socket)=>{
-            console.log(username)
-            console.log(socket)
-        })
-            
-        i=0
-        online_users.forEach((username, socket) => {
-            socket_tracker[i]=socket
-            usernames[i]=username
-            i++
-        })
-
-        io.emit('users_available', {'sockets':socket_tracker, 'usernames':usernames}) 
+        updateUsernames(data);
     })
 
 
