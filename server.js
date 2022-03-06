@@ -11,7 +11,7 @@ var certificate = fs.readFileSync('domain.crt')
 const credentials = {key: privateKey, cert: certificate}
 
 const app = express()
-//const httpServer = http.createServer(app)
+//const httpServer = http.createServer(app)   //- old
 const httpsPort = 4200
 const httpPort = 4201
 const socketio = require('socket.io')
