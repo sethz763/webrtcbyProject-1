@@ -82,7 +82,8 @@ app.post('/reg', function(req, res){
         if(error) throw error;
 
         if(results.length > 0){
-            response.send('email already registered - select forgot password to get your password emailed to you');
+            //response.send('email already registered - select forgot password to get your password emailed to you');
+            reqponse.render('register');
         } else{
             connection.query('INSERT INTO accounts (username, password, email) VALUES (?,?,?)', [username, password, email], function(err, results, fields){
                 if(err){throw err};
