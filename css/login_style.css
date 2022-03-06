@@ -70,3 +70,37 @@ body {
 .register-div{
     text-align: center;
 }
+
+label{ 
+    font-size: 20px;
+    background-color: rgb(87, 143, 165);
+    width: 400px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.3);
+    box-shadow: 10px;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.register-p{
+    
+    text-align: center;
+}
+
+.register_button{
+    width: 100%;
+    padding: 15px;
+   margin-top: 20px;
+    background: #3274d6;
+    border: 0;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 20px;
+    color: #ffffff;
+    transition: all 0.3s ease 0s;
+}
+
+.register_button:hover{
+    background:hsl(216, 49%, 39%) ;
+}

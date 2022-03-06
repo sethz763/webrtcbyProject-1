@@ -5,6 +5,7 @@ const fs = require('fs')
 const mysql = require('mysql')
 const session = require('express-session')
 const path = require('path')
+const nodemailer = require('nodemailer')
 var privateKey = fs.readFileSync('domain.key')
 var certificate = fs.readFileSync('domain.crt')
 const credentials = {key: privateKey, cert: certificate}

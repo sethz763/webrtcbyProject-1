@@ -18,7 +18,8 @@
 		</div>
 		<div class="login">
 			<h1>REGISTER</h1>
-			<form action="/reg" method="post">
+			<form action="/reg" method="post"  id="myform" novalidate>
+				
                 <label for="email">
 					<!-- font awesome icon -->
 					<i class="fas fa-at"></i>
@@ -40,10 +41,16 @@
 				</label>
 				<input type="password" name="reenterPassword" placeholder="Reenter Password" id="reenterPassword" required>
 
-				<input type="submit" value="Register">
+				<!-- <input type="submit" value="Register"> -->
+				<button class=register_button id="submit_button">REGISTER</button>
                 
+
 			</form>
-		</div>
 			
+		</div>
+		<p class="register-p">
+		<label id="register_status"></label>
+		</p>
+		<script src="public/register.js" type="text/javascript"></script>
 	</body>
 </html>
