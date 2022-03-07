@@ -248,7 +248,7 @@ function validate(socket, data){
             if(error)throw error;
         
             if(results.length > 0){
-                error_string += 'Usernamd Exists ';
+                error_string += 'Username Exists ';
                 formError = true;
                 io.to(socket).emit('form_error', error_string);
             }
