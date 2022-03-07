@@ -6,7 +6,12 @@ const reenterPassword = document.getElementById('reenterPassword');
 const submit_button = document.getElementById('submit_button');
 const form = document.getElementById('myform');
 
+const socket = io();
+
 status_label.innerHTML = 'ENTER ALL FIELDS';
+
+const original_onsubmit = form.onsubmit;
+
 
 username.addEventListener("input", function(){
     if(username.value.length > 1){
@@ -38,19 +43,15 @@ reenterPassword.addEventListener("input", function(){
     }
 });
 
-form.addEventListener('submit', function(event){
+function validate(){
     console.log("validating...")
-    if(validateEmail()
-    && username.value.length > 1
-    && password.value === reenterPassword.value){
-        status_label.innerHTML = 'Seems okay';
+    socket.emit('validate', {'email':email.value, 'username':username.value});
+    return false;
+}
 
-}
-else{
-    status_label.innerHTML = 'Missing something in the form';
+form.addEventListener('submit', function(event){
     event.preventDefault();
-}
-    
+    validate();
 })
 
 function validateEmail() {
@@ -65,7 +66,10 @@ function validateEmail() {
     return true ;
  }
 
+ socket.on('form_error', data => {
+    status_label.innerHTML = data;
+ })
 
-
-
-
+ socket.on('form_valid', data=>{
+        form.submit();
+ })

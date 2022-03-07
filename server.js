@@ -50,7 +50,7 @@ app.use("/css", express.static('css'));
 
 app.get('/',  function(req, res){
     if(req.session && req.session.username){
-        console.log('username: '+req.session.username + 'socket: ' + req.socket);
+        console.log('username: '+req.session.username + 'socket: ' + req.socket.id);
         //updateUsernames({'socket':req.socket, 'username':req.session.username});
     }
     res.render('index');
@@ -58,7 +58,7 @@ app.get('/',  function(req, res){
 
 app.get('', function(req, res){
     if(req.session && req.session.username){
-        console.log('username: '+io.socket.id + 'socket: ' + io.socket);
+        console.log('username: '+ req.session.username + 'socket: ' + req.socket.id);
         //updateUsernames({'socket':req.socket, 'username':req.session.username});
     }
     res.render('index');
@@ -78,20 +78,14 @@ app.post('/reg', function(req, res){
     let password = req.body.password;
     let passwordReentry = req.body.passwordReentry;
 
-    connection.query('SELECT * FROM accounts WHERE email = ?', [email], function(error, results, fields){
-        if(error) throw error;
-
-        if(results.length > 0){
-            //response.send('email already registered - select forgot password to get your password emailed to you');
-            reqponse.render('register');
-        } else{
-            connection.query('INSERT INTO accounts (username, password, email) VALUES (?,?,?)', [username, password, email], function(err, results, fields){
-                if(err){throw err};
-
-                res.redirect('/login')
-            })
-        }
+    connection.query('INSERT INTO accounts (email, username, password) VALUES (?,?,?)', [email, username, password], function(error, results, fields){
+        if (error) throw error;
+        console.log(error);
     })
+
+    res.redirect('login');
+
+    
 })
 
 //login
@@ -163,6 +157,9 @@ httpsServer.listen(httpsPort, () =>{
 var ip = require("ip");
 const { Console } = require("console")
 const { response } = require("express")
+const { KOI8R_BIN } = require("mysql/lib/protocol/constants/charsets")
+const { getMaxListeners } = require("process")
+const { AsyncLocalStorage } = require("async_hooks")
 console.dir ( ip.address() );
 
 const io = socketio(httpsServer)
@@ -232,6 +229,40 @@ io.use((socket, next) =>{
     sessionMiddleware(socket.request, {}, next);
 })
 
+function validate(socket, data){
+    let email = data.email;
+    let username = data.username;
+    let error_string = 'Registration Failed: ';
+    let formError = false;
+
+   connection.query('SELECT * FROM accounts WHERE email = ?', [email], function(error, results){
+            if(error)throw error;
+            console.log(results);
+            if(results.length > 0){
+                error_string += 'Email Exists ';
+                formError = true;
+                io.to(socket).emit('form_error', error_string);
+            } 
+    });
+   connection.query('SELECT * FROM accounts WHERE username = ?', [username], function(error, results){
+            if(error)throw error;
+        
+            if(results.length > 0){
+                error_string += 'Usernamd Exists ';
+                formError = true;
+                io.to(socket).emit('form_error', error_string);
+            }
+            if(formError == true){
+                io.to(socket).emit('form_error', error_string);
+            }
+            if(formError == false){
+                io.to(socket).emit('form_valid', 'Validation Passed');
+            }
+
+    });
+        
+}
+
 io.on('connection', (socket) =>{
     console.log('user connected ', socket.id)
     if(socket.request.session.loggedin){
@@ -282,7 +313,9 @@ io.on('connection', (socket) =>{
         updateUsernames(data);
     })
 
-
+    socket.on('validate', data=>{
+        validate(socket.id, data);
+    })
 
 })
 

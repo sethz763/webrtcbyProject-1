@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<script src="/socket.io/socket.io.js"></script>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,minimum-scale=1">
 		<title>Register</title>
@@ -18,7 +19,7 @@
 		</div>
 		<div class="login">
 			<h1>REGISTER</h1>
-			<form action="/reg" method="post"  id="myform" novalidate>
+			<form action="/reg" method="post"  id="myform" >
 				
                 <label for="email">
 					<!-- font awesome icon -->
@@ -42,8 +43,8 @@
 				<input type="password" name="reenterPassword" placeholder="Reenter Password" id="reenterPassword" required>
 
 				<!-- <input type="submit" value="Register"> -->
-				<button class=register_button id="submit_button">REGISTER</button>
-                
+				
+                <button class=register_button id="submit_button" onclick="validate()"">REGISTER</button>
 
 			</form>
 			
