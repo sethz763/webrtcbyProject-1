@@ -14,7 +14,8 @@ update_username_button.addEventListener('click', updateUsername)
 const toSocket = document.getElementById('toSocket')
 let tracks = []
 const configuaration = {iceServers:[{urls: 'stun:stun.l.google.com:19302'}]}
-let peer = null//new RTCPeerConnection(configuaration)
+let peer = null
+const peers = new Map();
 let toSocketId, fromSocketId
 var offerData = new Object()
 const usernamesMap = new Map()
@@ -46,6 +47,11 @@ const codec_type = ["video/VP9","video/VP9", "video/VP8"]
 
 function initializePeer(){
         peer = new RTCPeerConnection(configuaration)
+
+        //trying to create new peer to add to Map
+        let newPeer = new RTCPeerConnection(configuaration);
+        peers.set()
+
         let newCodecList = preferCodec(codecList, codec_type)
         changeVideoCodec(newCodecList)
     
