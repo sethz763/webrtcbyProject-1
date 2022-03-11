@@ -11,14 +11,13 @@ var answer_call_button = document.getElementById("accept_call")
 const fullscreen_button = document.getElementById("fullscreen")
 const update_username_button = document.getElementById('update_username')
 update_username_button.addEventListener('click', updateUsername)
+const usernamesMap = new Map()
 const toSocket = document.getElementById('toSocket')
 let tracks = []
 const configuaration = {iceServers:[{urls: 'stun:stun.l.google.com:19302'}]}
 let peer = null
-const peers = new Map();
 let toSocketId, fromSocketId
 var offerData = new Object()
-const usernamesMap = new Map()
 
 let speech = new SpeechSynthesisUtterance()
 speech.lang = "en"
@@ -47,10 +46,6 @@ const codec_type = ["video/VP9","video/VP9", "video/VP8"]
 
 function initializePeer(){
         peer = new RTCPeerConnection(configuaration)
-
-        //trying to create new peer to add to Map
-        let newPeer = new RTCPeerConnection(configuaration);
-        peers.set()
 
         let newCodecList = preferCodec(codecList, codec_type)
         changeVideoCodec(newCodecList)
@@ -262,7 +257,7 @@ async function createOffer() {
             }
         })
         //send offer to server
-        toSocketId = usernameToSocket(toSocket.value)
+        toSocketId = usernameToSocket(user_to_call.value)
         socket.emit('offer', { 'offer': offer, 'fromSocketId': fromSocketId, 'toSocketId': toSocketId })
     } catch (error) {
         console.log(error)
@@ -403,7 +398,7 @@ socket.on('stop', data =>{
 //handle user selection
 function clicks() {
     console.log(this.innerHTML)
-    toSocket.value = this.innerHTML
+    user_to_call.value = this.innerHTML
   }
 
 //update list of users that are online
