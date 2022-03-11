@@ -400,7 +400,7 @@ socket.on('stop', data =>{
 
 //handle user selection
 function clicks() {
-    console.log(this.innerHTML)
+    //console.log(this.innerHTML)
     toSocket.value = this.innerHTML
   }
 
