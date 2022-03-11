@@ -189,7 +189,10 @@ function exitFullscreen(){
 
 function playVideo(){
     localVideo.play()
-    remoteVideo.play()
+    //remoteVideo.play()
+    setTimeOut(()=>{
+        remoteVideo.play();
+     });
 }
 
 async function changeVideoInput(){
