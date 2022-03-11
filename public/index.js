@@ -260,7 +260,7 @@ async function createOffer() {
             }
         })
         //send offer to server
-        toSocketId = usernameToSocket(user_to_call.value)
+        toSocketId = usernameToSocket(toSocket.value)
         socket.emit('offer', { 'offer': offer, 'fromSocketId': fromSocketId, 'toSocketId': toSocketId })
     } catch (error) {
         console.log(error)
