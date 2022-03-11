@@ -401,7 +401,7 @@ socket.on('stop', data =>{
 //handle user selection
 function clicks() {
     console.log(this.innerHTML)
-    toSocketId.value = this.innerHTML
+    toSocket.value = this.innerHTML
   }
 
 //update list of users that are online
