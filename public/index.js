@@ -189,10 +189,7 @@ function exitFullscreen(){
 
 function playVideo(){
     localVideo.play()
-    //remoteVideo.play()
-    setTimeOut(()=>{
-        remoteVideo.play();
-     });
+    remoteVideo.play()
 }
 
 async function changeVideoInput(){
@@ -295,9 +292,12 @@ const createAnswer = async(destination) => {
     }
 }
 
+const showVideo_button = document.getElementById('showVideo_button');
+showVideo_button.addEventListener('click', playVideo);
+
 remoteVideo.oncanplay = function(){
     fullscreen_button.hidden = false;
-    playVideo()
+    showVideo_button.hidden = false;
 }
 
 function acceptOffer(socket){
@@ -363,6 +363,7 @@ const unMuteTracks = ()  => {
 const stopButtonHandler = () =>{
     socket.emit('stop', {'toSocketId': toSocketId})
     fullscreen_button.hidden=true
+    showVideo_button.hidden = true;
     stopTracks()
 }
 
@@ -396,6 +397,7 @@ socket.on('error_username_taken', data=>{
 socket.on('stop', data =>{
     stopTracks()
     exitFullscreen()
+    showVideo_button.hidden = false;
 })
 
 //handle user selection
