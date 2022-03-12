@@ -53,7 +53,10 @@ function initializePeer(){
     peer.addEventListener('connectionstatechange', event =>{
         if (peer.connectionState === 'connected') {
             // Peers connected!
-            text = "Connected! "
+            error_message_display.innerHTML = "Connected! ";
+        }
+        else{
+            error_message_display.innerHTML = " ";
         }
     })
     
@@ -365,6 +368,7 @@ const stopButtonHandler = () =>{
     fullscreen_button.hidden=true
     showVideo_button.hidden = true;
     stopTracks()
+    error_message_display.innerHTML = " ";
 }
 
 //stop tracks
@@ -398,6 +402,7 @@ socket.on('stop', data =>{
     stopTracks()
     exitFullscreen()
     showVideo_button.hidden = false;
+    error_message_display.innerHTML = " ";
 })
 
 //handle user selection
