@@ -12,11 +12,11 @@ const fullscreen_button = document.getElementById("fullscreen")
 const update_username_button = document.getElementById('update_username')
 update_username_button.addEventListener('click', updateUsername)
 const usernamesMap = new Map()
-const toSocket = document.getElementById('toSocket')
+const callee_username_entry = document.getElementById('toSocket')
 let tracks = []
 const configuaration = {iceServers:[{urls: 'stun:stun.l.google.com:19302'}]}
 let peer = null
-let toSocketId, fromSocketId
+let callee_username, fromSocketId
 var offerData = new Object()
 
 let speech = new SpeechSynthesisUtterance()
@@ -245,22 +245,23 @@ Map.prototype.getKey = function(targetValue){
 async function createOffer() {
     try {
         initializePeer()
+        let i = peers.length - 1;
         let stream = await openMediaDevices()
-        stream.getTracks().forEach(track => peer.addTrack(track))
+        stream.getTracks().forEach(track => peers[i].addTrack(track))
         unMuteTracks()
 
         let offer = await peer.createOffer()
-        peer.setLocalDescription(new RTCSessionDescription(offer))
+        peers[i].setLocalDescription(new RTCSessionDescription(offer))
 
         //ice candidate
-        peer.addEventListener('icecandidate', e => {
+        peer[i].addEventListener('icecandidate', e => {
             if (e.candidate) {
                 console.log(e.candidate)
-                socket.emit('callerCandidate', { 'candidate': e.candidate, 'fromSocketId': fromSocketId, 'toSocketId': toSocketId })
+                socket.emit('callerCandidate', { 'candidate': e.candidate, 'fromSocketId': fromSocketId, 'toSocketId': callee_username })
             }
         })
         //send offer to server
-        toSocketId = usernameToSocket(toSocket.value)
+        let toSocketId = usernameToSocket(callee_username_entry.value)
         socket.emit('offer', { 'offer': offer, 'fromSocketId': fromSocketId, 'toSocketId': toSocketId })
     } catch (error) {
         console.log(error)
@@ -329,7 +330,7 @@ socket.on('offer', data=>{
     }
     
     stop.addEventListener('click', stopButtonHandler)
-    toSocketId=data.fromSocketId
+    callee_username=data.fromSocketId
     answer_call_button.addEventListener("click", (e)=>acceptOffer(data.fromSocketId))
 })
 
@@ -364,7 +365,7 @@ const unMuteTracks = ()  => {
 
 //stop button handler
 const stopButtonHandler = () =>{
-    socket.emit('stop', {'toSocketId': toSocketId})
+    socket.emit('stop', {'toSocketId': callee_username})
     fullscreen_button.hidden=true
     showVideo_button.hidden = true;
     stopTracks()
@@ -408,7 +409,7 @@ socket.on('stop', data =>{
 //handle user selection
 function clicks() {
     //console.log(this.innerHTML)
-    toSocket.value = this.innerHTML
+    callee_username_entry.value = this.innerHTML
   }
 
 //update list of users that are online
@@ -437,6 +438,9 @@ socket.on('users_available', data =>{
             s.style.paddingInline = '5px'
         }
         else{
+            if(sockets[i] === fromSocketId){
+                username = users[i];
+            }
             error_message="LOGGED IN "
             error_message_display.innerHTML=error_message
         }

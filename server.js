@@ -288,7 +288,7 @@ io.on('connection', (socket) =>{
         io.to(data.toSocketId).emit('offer', data)
     })
 
-    //receive/send answer
+    //receive/send answerse
     socket.on('answer', data =>{
         io.to(data.destination).emit('answer', data)
     })
