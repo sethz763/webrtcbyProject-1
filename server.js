@@ -23,8 +23,8 @@ const online_users = new Map()
 
 const connection = mysql.createConnection({
     host    : 'localhost',
-    user    : 'seth',
-    password:  'SwiftSwaft#0',
+    user    : 'Seth',
+    password:  'swift123',
     database: 'nodelogin'
 })
 
