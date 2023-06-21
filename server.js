@@ -28,13 +28,14 @@ const connection = mysql.createConnection({
     database: 'nodelogin'
 })
 
+console.log('this is the new version 1.0')
+
 connection.connect((err)=>{
     if(err){
         console.log(err);
         return;
     }
-    console.log('connected to mysql')
-    
+    console.log('connected to mysql');    
 })
 
 //test
