@@ -23,12 +23,20 @@ const online_users = new Map()
 
 const connection = mysql.createConnection({
     host    : 'localhost',
-    user    : 'seth',
-    password:  'SwiftSwaft#0',
+    user    : 'sethz763',
+    password:  'Swift123',
     database: 'nodelogin'
 })
 
-//test
+console.log('this is the new version 1.0')
+
+connection.connect((err)=>{
+    if(err){
+        console.log(err);
+        return;
+    }
+    console.log('connected to mysql');    
+})
 
 const sessionMiddleware = session({
 	secret: 'secret',
