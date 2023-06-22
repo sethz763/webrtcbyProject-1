@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 User=root
-WorkingDirectory=home/sethz763/webrtcbyProject-1
-ExecStart=/usr/bin/node home/sethz763/webrtcbyProject-1/pwserver.js
+WorkingDirectory=/home/sethz763/webrtcbyProject-1
+ExecStart=/usr/bin/node /home/sethz763/webrtcbyProject-1/pwserver.js
 Restart=always
 
 [Install]
