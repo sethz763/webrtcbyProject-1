@@ -5,7 +5,7 @@ After=network.target
 [Service]
 User=root
 WorkingDirectory=/home/sethz763/webrtcbyProject-1
-ExecStart=/usr/bin/node /home/sethz763/webrtcbyProject-1/server.js
+ExecStart=/usr/bin/node /home/sethz763/webrtcbyProject-1/server-multi.js
 Restart=always
 
 [Install]
