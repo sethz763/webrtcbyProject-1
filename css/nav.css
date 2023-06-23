@@ -9,13 +9,13 @@
 }
 
 .nav-link{
-  font-size: 25px;
+  font-size: 20px;
   text-underline-offset: 10px;
   font-weight: 900;
   color: rgb(255, 255, 255);
   text-decoration: none;
   align-items: initial;
-  padding: 12px;
+  padding: 10px;
   display: inline;
 }
 

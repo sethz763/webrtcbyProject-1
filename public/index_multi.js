@@ -511,12 +511,12 @@ socket.on('callerCandidate', data => {
 
 //callee candidate
 socket.on('calleeCandidate', data =>{
-    let peers_index = peers.findIndex( peer => {
+    let peer_index = peers.findIndex( peer => {
         if(peer.socket === data.socket){
             return true;
         }
     })
-    peers[peers_index].peer.addIceCandidate(data.candidate)
+    peers[peer_index].peer.addIceCandidate(data.candidate)
     console.log(data)
 })
 
