@@ -46,7 +46,7 @@ camera_selector.addEventListener('change', changeVideoInput)
 let codecList = RTCRtpSender.getCapabilities("video").codecs;
 
 //reorder list of codecs
-const codec_type = ["video/VP9","video/VP9", "video/VP8"]  
+const codec_type = ["AV1","video/VP9","video/VP9", "video/VP8"]  
 
 function initializePeer(peerUsername, peerSocket){
         //trying to create new peer to add to Map
@@ -516,7 +516,7 @@ socket.on('calleeCandidate', data =>{
             return true;
         }
     })
-    peers[peer_index].peer.addIceCandidate(data.candidate)
+    peers[peer_index].peer.addIceCandidate(data.candidate).catch(e => (console.log(e)))
     console.log(data)
 })
 
