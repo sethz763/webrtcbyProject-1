@@ -31,7 +31,7 @@ window.speechSynthesis.onvoiceschanged = () => {
   speech.voice = voices[0];
 }
 
-var text = "SETH'S WEBRTC - "
+var text = "SETH'S WEBRTC: "
 var error_message = ""
 var error_message_display = document.getElementById('error_message')
 
