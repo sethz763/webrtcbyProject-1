@@ -35,6 +35,7 @@ body {
     height: 30px;
     background-color: #3274d6;
     color: #ffffff;
+    white-space: pre;
 }
 .login form input[type="password"], .login form input[type="text"] {
     width: 230px;
