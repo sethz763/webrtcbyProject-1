@@ -7,7 +7,7 @@ body {
     background-color: powderblue;
 }
 .login {
-    width: 400px;
+    width: 300px;
     background-color: #ffffff;
     box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.3);
     margin:10px auto;
@@ -19,10 +19,6 @@ body {
     font-size: 24px;
     padding: 20px 0 20px 0;
     border-bottom: 1px solid #dee0e4;
-}
-
-.login login {
-    width: 200;
 }
 
 .login form {
