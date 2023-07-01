@@ -20,6 +20,11 @@ body {
     padding: 20px 0 20px 0;
     border-bottom: 1px solid #dee0e4;
 }
+
+.login login{
+    width: 200
+}
+
 .login form {
     display: flex;
     flex-wrap: wrap;
