@@ -35,7 +35,6 @@ body {
     height: 30px;
     background-color: #3274d6;
     color: #ffffff;
-    white-space: pre-line;
 }
 .login form input[type="password"], .login form input[type="text"] {
     width: 230px;
@@ -44,6 +43,7 @@ body {
     margin-bottom: 20px;
     font-size: 20px;
     padding: 0 15px;
+    white-space: pre-line
 }
 .login form input[type="submit"] {
     width: 90%;
