@@ -22,8 +22,8 @@ body {
 }
 
 .login form {
-    display: flex;
-    flex-wrap: wrap;
+    /* display: flex; */
+    /* flex-wrap: wrap; */
     justify-content: center;
     padding-top: 20px;
 }
@@ -43,7 +43,6 @@ body {
     margin-bottom: 20px;
     font-size: 20px;
     padding: 0 15px;
-    white-space: pre-line;
 }
 .login form input[type="submit"] {
     width: 90%;
