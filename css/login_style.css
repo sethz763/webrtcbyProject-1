@@ -37,6 +37,7 @@ body {
     color: #ffffff;
     /* flex-basis: 10%; */
     padding-left: 10px;
+    
 }
 .login form input[type="password"], .login form input[type="text"] {
     width: 230px;
@@ -44,8 +45,7 @@ body {
     border: 1px solid #dee0e4;
     margin-bottom: 20px;
     font-size: 20px;
-    padding: 0 30px;
-    padding-block-end: 30px;
+    padding: 0 15px;
 }
 .login form input[type="submit"] {
     width: 90%;
