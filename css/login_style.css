@@ -43,7 +43,7 @@ body {
     margin-bottom: 20px;
     font-size: 20px;
     padding: 0 15px;
-    white-space: pre-line
+    white-space: pre-line;
 }
 .login form input[type="submit"] {
     width: 90%;
