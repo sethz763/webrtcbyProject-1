@@ -22,8 +22,8 @@ body {
 }
 
 .login form {
-    /* display: flex; */
-    /* flex-wrap: wrap; */
+    /display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     padding-top: 20px;
 }
@@ -35,6 +35,7 @@ body {
     height: 30px;
     background-color: #3274d6;
     color: #ffffff;
+    flex-basis: 25%;
 }
 .login form input[type="password"], .login form input[type="text"] {
     width: 230px;
