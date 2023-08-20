@@ -52,7 +52,7 @@ body {
 }
 .login form input[type="submit"] {
     width: 85%;
-    padding: 8%;
+    padding-left: 8%;
     margin-top: 20px;
     background-color: #3274d6;
     border: 0;
