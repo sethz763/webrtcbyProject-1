@@ -37,7 +37,7 @@ body {
     color: #ffffff;
     /* flex-basis: 10%; */
     padding-left: 10px;
-    padding-bottom: 10px;
+    padding-bottom: 20px;
     
 }
 .login form input[type="password"], .login form input[type="text"] {
