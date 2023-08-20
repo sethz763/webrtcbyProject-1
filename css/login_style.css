@@ -43,9 +43,9 @@ body {
     width: 85%;
     height: 30px;
     border: 1px solid #dee0e4;
-    margin-bottom: 20px;
+    margin-bottom: 0px;
     font-size: 20px;
-    padding: 0 15px;
+    padding: 0 0px;
 }
 .login form input[type="submit"] {
     width: 85%;
