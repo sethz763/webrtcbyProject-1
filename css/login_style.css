@@ -25,7 +25,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    padding-top: 20px;
+    padding-top: 10px;
 }
 .login form label {
     /* display: flex; */
